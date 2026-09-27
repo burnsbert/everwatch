@@ -1,0 +1,61 @@
+{
+ "source": "ultrawatch_lib/ui/draw.py age_str @ 9704e20 (generated)",
+ "cases": [
+  {
+   "seconds": 0,
+   "expected": "0s"
+  },
+  {
+   "seconds": -5,
+   "expected": "0s"
+  },
+  {
+   "seconds": 1,
+   "expected": "1s"
+  },
+  {
+   "seconds": 59,
+   "expected": "59s"
+  },
+  {
+   "seconds": 59.9,
+   "expected": "59s"
+  },
+  {
+   "seconds": 60,
+   "expected": "1m"
+  },
+  {
+   "seconds": 61,
+   "expected": "1m"
+  },
+  {
+   "seconds": 3599,
+   "expected": "59m"
+  },
+  {
+   "seconds": 3600,
+   "expected": "1h"
+  },
+  {
+   "seconds": 7300,
+   "expected": "2h"
+  },
+  {
+   "seconds": 86399,
+   "expected": "23h"
+  },
+  {
+   "seconds": 86400,
+   "expected": "1d"
+  },
+  {
+   "seconds": 259600,
+   "expected": "3d"
+  },
+  {
+   "seconds": 10000000.0,
+   "expected": "115d"
+  }
+ ]
+}

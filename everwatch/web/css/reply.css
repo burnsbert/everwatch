@@ -1,0 +1,50 @@
+/* W-10 reply bar under the preview's screen (views/reply.mjs).
+ * Token-based (WP-B, docs/design/VISUAL_SPEC.md §4.6 / §4.8). */
+
+.reply {
+  display: flex; flex-direction: column; gap: var(--sp-1h);
+  margin: var(--sp-2) var(--sp-4) 0;
+}
+.reply[hidden], .reply-quick[hidden] { display: none; }
+
+.reply-quick { display: flex; align-items: center; gap: var(--sp-2); min-width: 0; }
+.reply-quick-label {
+  flex: none;
+  font: var(--weight-semibold) var(--text-small);
+  color: var(--fg-dim);
+}
+.reply-quick-list { display: flex; flex-wrap: wrap; gap: var(--sp-1h); min-width: 0; }
+.reply-option {
+  /* block-level text (not the .btn flex centering) so a long option ends
+     in an ellipsis instead of being clipped on both sides */
+  display: inline-block;
+  max-width: 30ch;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font: var(--weight-regular) var(--mono-small);
+  line-height: calc(var(--control-h-sm) - 2px);
+}
+.reply-option.is-selected { border-color: var(--attention-glyph); }
+
+.reply-form { display: flex; align-items: center; gap: var(--sp-1h); min-width: 0; }
+.reply-input {
+  flex: 1; min-width: 0;
+  height: var(--control-h); padding: 0 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-s);
+  background: var(--bg-term);
+  color: var(--fg);
+  font: var(--weight-regular) var(--mono-screen);
+}
+.reply-input::placeholder { color: var(--idle); }
+.reply-input:focus { outline: none; border-color: var(--focus); box-shadow: var(--focus-ring); }
+.reply-keys { display: flex; gap: var(--sp-1); flex: none; }
+.reply-key { padding: 0 var(--sp-2); font-family: var(--font-mono); }
+
+.reply-hint { margin: 0; font: var(--weight-regular) var(--text-small); color: var(--fg-dim); visibility: hidden; }
+/* visibility, not display: showing it must not shift the buttons above it
+   mid-click (a focus change on mousedown would move them before mouseup) */
+.reply:has(.reply-input:focus) .reply-hint { visibility: visible; }
+
+/* The compact HUD has no preview, so no reply bar either. */
+html[data-mode="compact"] .reply { display: none; }
+@media (max-width: 700px) { .reply-keys { display: none; } }

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs><linearGradient id="ew-tile" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#383a42"/><stop offset="1" stop-color="#131417"/></linearGradient></defs>
+  <rect width="32" height="32" rx="7.2" fill="url(#ew-tile)"/>
+  <circle cx="16" cy="16" r="8.9" fill="none" stroke="#f4f5f8" stroke-width="3.6" stroke-linecap="round" stroke-dasharray="39 56" transform="rotate(-20 16 16)"/>
+  <circle cx="16" cy="16" r="4.6" fill="#ffaf00"/>
+</svg>

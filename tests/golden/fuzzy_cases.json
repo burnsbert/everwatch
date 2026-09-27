@@ -1,0 +1,80 @@
+{
+ "source": "ultrawatch_lib/ui/draw.py fuzzy_match @ 9704e20 (generated)",
+ "cases": [
+  {
+   "needle": "",
+   "haystack": "anything",
+   "expected": true
+  },
+  {
+   "needle": "api",
+   "haystack": "~/src/api-gateway claude deploy-fix",
+   "expected": true
+  },
+  {
+   "needle": "agw",
+   "haystack": "~/src/api-gateway claude ",
+   "expected": true
+  },
+  {
+   "needle": "API",
+   "haystack": "~/src/api-gateway zsh ",
+   "expected": true
+  },
+  {
+   "needle": "xyz",
+   "haystack": "~/src/api-gateway zsh ",
+   "expected": false
+  },
+  {
+   "needle": "dfx",
+   "haystack": "~/src/api-gateway claude deploy-fix",
+   "expected": true
+  },
+  {
+   "needle": "ss",
+   "haystack": "s",
+   "expected": false
+  },
+  {
+   "needle": "~/",
+   "haystack": "~/logs tail ",
+   "expected": true
+  },
+  {
+   "needle": "café",
+   "haystack": "Café au lait",
+   "expected": true
+  },
+  {
+   "needle": "日本",
+   "haystack": "日本語テキスト",
+   "expected": true
+  },
+  {
+   "needle": "  ",
+   "haystack": "a b c",
+   "expected": true
+  },
+  {
+   "needle": "zz",
+   "haystack": "z z",
+   "expected": true
+  },
+  {
+   "needle": "pay svc",
+   "haystack": "~/src/payments-service codex ",
+   "expected": false
+  },
+  {
+   "needle": "ÅB",
+   "haystack": "åbc",
+   "expected": true
+  },
+  {
+   "needle": "-",
+   "haystack": "-zsh",
+   "expected": true
+  }
+ ]
+}

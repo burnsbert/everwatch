@@ -1,0 +1,12 @@
+/.*.md
+build/
+dist/
+node_modules/
+test-results/
+__pycache__/
+*.pyc
+.DS_Store
+.rightsize-goal/
+.coverage
+.coverage.*
+htmlcov/

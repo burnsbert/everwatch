@@ -1,0 +1,579 @@
+{
+ "_comment": "Everwatch demo fleet (docs/DESIGN.md W-9). Scenario time s = clock - t0; each session plays its `cycle` of [seconds, screen] phases starting `offset` seconds in. Screen placeholders: {spin} spinner glyph, {elapsed} time in the phase, {tokens} token count, {log} tail -f lines.",
+ "clock": "2026-09-25T15:00:00-04:00",
+ "utc_offset_minutes": -240,
+ "home": "/Users/sam",
+ "user": "sam",
+ "warmup_minutes": 60,
+ "projects": [
+  "API",
+  "Dashboard",
+  "Billing",
+  "",
+  ""
+ ],
+ "projects_open": true,
+ "prefs": {
+  "sort": "attention"
+ },
+ "sessions": [
+  {
+   "uid": "5E1C0A7B-1F2D-4E8A-9B3C-0D4E5F6A7B01",
+   "window_id": 4711,
+   "tab_index": 1,
+   "tty": "/dev/ttys003",
+   "agent": "claude",
+   "name": "Fix staging deploy",
+   "path": "/Users/sam/src/api-gateway",
+   "tab_color": "blue",
+   "label": "deploy-fix",
+   "cycle": [
+    [
+     540,
+     "cc_api_busy"
+    ],
+    [
+     420,
+     "cc_api_permission"
+    ]
+   ],
+   "offset": 790
+  },
+  {
+   "uid": "5E1C0A7B-1F2D-4E8A-9B3C-0D4E5F6A7B02",
+   "window_id": 4711,
+   "tab_index": 2,
+   "tty": "/dev/ttys004",
+   "agent": "claude",
+   "name": "Usage charts",
+   "path": "/Users/sam/src/web-dashboard",
+   "tab_color": "purple",
+   "cycle": [
+    [
+     60,
+     "cc_dash_busy"
+    ],
+    [
+     30,
+     "cc_dash_question"
+    ]
+   ],
+   "offset": 25
+  },
+  {
+   "uid": "5E1C0A7B-1F2D-4E8A-9B3C-0D4E5F6A7B03",
+   "window_id": 4711,
+   "tab_index": 3,
+   "tty": "/dev/ttys005",
+   "agent": "codex",
+   "name": "codex",
+   "path": "/Users/sam/src/billing-service",
+   "tab_color": "green",
+   "label": "stripe-webhooks",
+   "cycle": [
+    [
+     300,
+     "cx_billing_working"
+    ],
+    [
+     240,
+     "cx_billing_approval"
+    ]
+   ],
+   "offset": 375
+  },
+  {
+   "uid": "5E1C0A7B-1F2D-4E8A-9B3C-0D4E5F6A7B04",
+   "window_id": 4711,
+   "tab_index": 4,
+   "tty": "/dev/ttys006",
+   "agent": null,
+   "name": "tail -f access.log",
+   "path": "/Users/sam/src/api-gateway",
+   "cycle": [
+    [
+     3600,
+     "sh_tail"
+    ]
+   ],
+   "offset": 0
+  },
+  {
+   "uid": "5E1C0A7B-1F2D-4E8A-9B3C-0D4E5F6A7B05",
+   "window_id": 4711,
+   "tab_index": 5,
+   "tty": "/dev/ttys007",
+   "agent": "claude",
+   "name": "Pagination docs",
+   "path": "/Users/sam/src/docs-site",
+   "cycle": [
+    [
+     240,
+     "cc_docs_busy"
+    ],
+    [
+     480,
+     "cc_docs_idle"
+    ]
+   ],
+   "offset": 254
+  },
+  {
+   "uid": "9A0B7C6D-2E3F-4A5B-8C7D-1E2F3A4B5C01",
+   "window_id": 5122,
+   "tab_index": 1,
+   "tty": "/dev/ttys009",
+   "agent": "codex",
+   "name": "codex",
+   "path": "/Users/sam/src/ml-pipeline",
+   "cycle": [
+    [
+     420,
+     "cx_ml_working"
+    ],
+    [
+     180,
+     "cx_ml_idle"
+    ]
+   ],
+   "offset": 130
+  },
+  {
+   "uid": "9A0B7C6D-2E3F-4A5B-8C7D-1E2F3A4B5C02",
+   "window_id": 5122,
+   "tab_index": 2,
+   "tty": "/dev/ttys010",
+   "agent": "claude",
+   "name": "Audit log bucket",
+   "path": "/Users/sam/src/infra",
+   "shell_integration": false,
+   "label": "tf-plan",
+   "cycle": [
+    [
+     600,
+     "cc_infra_busy"
+    ],
+    [
+     2400,
+     "cc_infra_idle"
+    ]
+   ],
+   "offset": 2160
+  },
+  {
+   "uid": "9A0B7C6D-2E3F-4A5B-8C7D-1E2F3A4B5C03",
+   "window_id": 5122,
+   "tab_index": 3,
+   "tty": "/dev/ttys008",
+   "agent": null,
+   "name": "-zsh",
+   "path": "/Users/sam",
+   "cycle": [
+    [
+     3600,
+     "sh_home"
+    ]
+   ],
+   "offset": 0
+  },
+  {
+   "uid": "9A0B7C6D-2E3F-4A5B-8C7D-1E2F3A4B5C04",
+   "window_id": 5122,
+   "tab_index": 4,
+   "tty": "/dev/ttys011",
+   "agent": null,
+   "name": "npm run dev",
+   "path": "/Users/sam/src/web-dashboard",
+   "cycle": [
+    [
+     3600,
+     "sh_vite"
+    ]
+   ],
+   "offset": 0
+  }
+ ],
+ "screens": {
+  "cc_api_busy": {
+   "processing": true,
+   "lines": [
+    "⏺ Read(k8s/staging/deployment.yaml)",
+    "  ⎿  Read 88 lines",
+    "",
+    "⏺ Bash(kubectl -n staging describe pod api-gateway-7d9f8c6b5-x2kqp | tail -4)",
+    "  ⎿  Warning  Failed   12s   kubelet  Error: couldn't find key redis_url in",
+    "     ConfigMap staging/api-gateway-config",
+    "     Normal   BackOff  3s    kubelet  Back-off restarting failed container",
+    "",
+    "⏺ The pods crash-loop because the new rate limiter reads RATE_LIMIT_REDIS_URL,",
+    "  but the deployment never mounts that ConfigMap key. Adding it now.",
+    "",
+    "{spin} Investigating… ({elapsed} · ↓ {tokens} tokens · esc to interrupt)",
+    "",
+    "────────────────────────────────────────────────────────────────────────────────────────────────",
+    "❯ ",
+    "────────────────────────────────────────────────────────────────────────────────────────────────",
+    "  Sonnet 4.6 | api-gateway (fix/staging-config) [48% remaining]",
+    "  ⏵⏵ accept edits on (shift+tab to cycle)"
+   ]
+  },
+  "cc_api_permission": {
+   "processing": false,
+   "lines": [
+    "⏺ Update(k8s/staging/deployment.yaml)",
+    "  ⎿  Updated k8s/staging/deployment.yaml with 5 additions",
+    "       41            - name: RATE_LIMIT_REDIS_URL",
+    "       42              valueFrom:",
+    "       43                configMapKeyRef:",
+    "       44                  name: api-gateway-config",
+    "       45                  key: redis_url",
+    "",
+    "⏺ Now I'll restart the deployment so the pods pick up the new key.",
+    "",
+    "╭──────────────────────────────────────────────────────────────────────────────╮",
+    "│ Bash command                                                                 │",
+    "│                                                                              │",
+    "│   kubectl rollout restart deployment/api-gateway -n staging                  │",
+    "│   Restart api-gateway pods in staging                                        │",
+    "│                                                                              │",
+    "│ Do you want to proceed?                                                      │",
+    "│ ❯ 1. Yes                                                                     │",
+    "│   2. Yes, and don't ask again for kubectl rollout commands                   │",
+    "│   3. No, and tell Claude what to do differently (esc)                        │",
+    "╰──────────────────────────────────────────────────────────────────────────────╯"
+   ]
+  },
+  "cc_dash_busy": {
+   "processing": true,
+   "lines": [
+    "⏺ Update(src/components/charts/UsageChart.tsx)",
+    "  ⎿  Updated src/components/charts/UsageChart.tsx with 23 additions and 8",
+    "     removals",
+    "",
+    "⏺ Bash(npm run test -- charts)",
+    "  ⎿  PASS  src/components/charts/UsageChart.test.tsx (4 tests)",
+    "     PASS  src/components/charts/Sparkline.test.tsx (6 tests)",
+    "     Tests: 10 passed, 10 total",
+    "",
+    "{spin} Refactoring chart components… ({elapsed} · ↑ {tokens} tokens · esc to interrupt)",
+    "  ⎿  Next: move the chart colors out of the component",
+    "",
+    "────────────────────────────────────────────────────────────────────────────────────────────────",
+    "❯ ",
+    "────────────────────────────────────────────────────────────────────────────────────────────────",
+    "  Sonnet 4.6 | web-dashboard (feat/usage-charts) [57% remaining]",
+    "  ⏵⏵ accept edits on (shift+tab to cycle)"
+   ]
+  },
+  "cc_dash_question": {
+   "processing": false,
+   "lines": [
+    "⏺ The charts render correctly now. Before I extract the colors, one",
+    "  choice is yours:",
+    "",
+    "☐ Chart colors",
+    "",
+    "Where should the chart colors come from?",
+    "",
+    "❯ 1. Tailwind tokens",
+    "     Reuse the existing design tokens (keeps dark mode for free)",
+    "  2. Dedicated palette",
+    "     Add a chart-only palette in src/theme/charts.ts",
+    "  3. Type something.",
+    "",
+    "Enter to select · Tab/Arrow keys to navigate · Esc to cancel"
+   ]
+  },
+  "cx_billing_working": {
+   "processing": true,
+   "lines": [
+    "• Edited app/webhooks/stripe.py (+19 -4)",
+    "    Deduplicate events by event.id before enqueueing the handler.",
+    "",
+    "• Ran pytest tests/webhooks -q",
+    "  └ 14 passed in 2.31s",
+    "",
+    "• Working ({elapsed} • esc to interrupt)",
+    "",
+    "› Ask Codex to do anything",
+    "",
+    "  ⏎ send   ⇧⏎ newline   ⌃T transcript   ⌃C quit   71% context left"
+   ]
+  },
+  "cx_billing_approval": {
+   "processing": false,
+   "lines": [
+    "• Edited app/webhooks/stripe.py (+19 -4)",
+    "    Deduplicate events by event.id before enqueueing the handler.",
+    "",
+    "• Ran pytest tests/webhooks -q",
+    "  └ 14 passed in 2.31s",
+    "",
+    "• I'll replay yesterday's failed events against the local endpoint to",
+    "  confirm the duplicate charges are gone.",
+    "",
+    "  Would you like to run the following command?",
+    "",
+    "  $ stripe events resend evt_1Q8rT2LkdIwHu7ix --webhook-endpoint we_local",
+    "",
+    "› 1. Yes, proceed (y)",
+    "  2. Yes, and don't ask again for this command (a)",
+    "  3. No, and tell Codex what to do differently (esc)"
+   ]
+  },
+  "sh_tail": {
+   "processing": true,
+   "log": "access",
+   "lines": [
+    "sam@mbp api-gateway % tail -f logs/access.log",
+    "{log}"
+   ]
+  },
+  "cc_docs_busy": {
+   "processing": true,
+   "lines": [
+    "⏺ Read(docs/api/pagination.md)",
+    "  ⎿  Read 120 lines",
+    "",
+    "⏺ Update(docs/api/pagination.md)",
+    "  ⎿  Updated docs/api/pagination.md with 42 additions and 6 removals",
+    "",
+    "{spin} Writing the quick-start example… ({elapsed} · ↓ {tokens} tokens · esc to interrupt)",
+    "",
+    "────────────────────────────────────────────────────────────────────────────────────────────────",
+    "❯ ",
+    "────────────────────────────────────────────────────────────────────────────────────────────────",
+    "  Sonnet 4.6 | docs-site (main) [74% remaining]",
+    "  ⏵⏵ accept edits on (shift+tab to cycle)"
+   ]
+  },
+  "cc_docs_idle": {
+   "processing": false,
+   "lines": [
+    "⏺ Done. The API reference now documents the three new pagination",
+    "  parameters (cursor, limit, order), and the quick-start example uses",
+    "  cursor paging end to end.",
+    "",
+    "  ⎿  Updated docs/api/pagination.md with 42 additions and 6 removals",
+    "  ⎿  Updated docs/quickstart.md with 12 additions and 9 removals",
+    "",
+    "✻ Worked for 4m 2s",
+    "",
+    "────────────────────────────────────────────────────────────────────────────────────────────────",
+    "❯ ",
+    "────────────────────────────────────────────────────────────────────────────────────────────────",
+    "  Sonnet 4.6 | docs-site (main) [71% remaining]",
+    "  ⏵⏵ accept edits on (shift+tab to cycle)"
+   ]
+  },
+  "cx_ml_working": {
+   "processing": true,
+   "lines": [
+    "• Updated pipelines/feature_store.py (+38 -12)",
+    "    Batch the embedding writes in chunks of 512 rows.",
+    "",
+    "• Ran python -m pipelines.backfill --shard 7",
+    "  └ backfilling 2026-Q3 shard 7/12  ▰▰▰▰▰▰▱▱▱▱  58%",
+    "",
+    "• Working ({elapsed} • esc to interrupt)",
+    "",
+    "› Ask Codex to do anything",
+    "",
+    "  ⏎ send   ⇧⏎ newline   ⌃T transcript   ⌃C quit   62% context left"
+   ]
+  },
+  "cx_ml_idle": {
+   "processing": false,
+   "lines": [
+    "• Backfill finished: 12/12 shards, 4.2M rows, no write conflicts.",
+    "",
+    "  Summary",
+    "  - Batched embedding writes (512 rows per chunk); shard time dropped",
+    "    from 11m to 3m 40s.",
+    "  - Added a --resume flag so a failed shard restarts where it stopped.",
+    "",
+    "› Ask Codex to do anything",
+    "",
+    "  ⏎ send   ⇧⏎ newline   ⌃T transcript   ⌃C quit   55% context left"
+   ]
+  },
+  "cc_infra_busy": {
+   "processing": true,
+   "lines": [
+    "⏺ Bash(terraform plan -out=tfplan)",
+    "  ⎿  aws_s3_bucket.audit_logs: Refreshing state... [id=acme-audit-logs]",
+    "     aws_iam_role.api_gateway: Refreshing state... [id=api-gateway-prod]",
+    "",
+    "{spin} Planning… ({elapsed} · ↓ {tokens} tokens · esc to interrupt)",
+    "",
+    "────────────────────────────────────────────────────────────────────────────────────────────────",
+    "❯ ",
+    "────────────────────────────────────────────────────────────────────────────────────────────────",
+    "  Sonnet 4.6 | infra (main) [66% remaining]",
+    "  ⏵⏵ accept edits on (shift+tab to cycle)"
+   ]
+  },
+  "cc_infra_idle": {
+   "processing": false,
+   "lines": [
+    "⏺ terraform plan finished cleanly:",
+    "",
+    "    Plan: 3 to add, 1 to change, 0 to destroy.",
+    "",
+    "    + aws_s3_bucket.audit_logs",
+    "    + aws_s3_bucket_versioning.audit_logs",
+    "    + aws_iam_policy.audit_writer",
+    "    ~ aws_iam_role.api_gateway  (policy attachment)",
+    "",
+    "  Nothing has been applied. Review tfplan and run terraform apply when",
+    "  you're ready.",
+    "",
+    "✻ Worked for 1m 48s",
+    "",
+    "────────────────────────────────────────────────────────────────────────────────────────────────",
+    "❯ ",
+    "────────────────────────────────────────────────────────────────────────────────────────────────",
+    "  Sonnet 4.6 | infra (main) [64% remaining]",
+    "  ⏵⏵ accept edits on (shift+tab to cycle)"
+   ]
+  },
+  "sh_home": {
+   "processing": false,
+   "lines": [
+    "Last login: Fri Sep 25 08:41:17 on ttys008",
+    "sam@mbp ~ % brew outdated",
+    "gh (2.61.0) < 2.62.0",
+    "node (22.9.0) < 22.11.0",
+    "terraform (1.9.6) < 1.9.8",
+    "sam@mbp ~ % git -C ~/src/api-gateway log --oneline -4",
+    "a41c9e2 (HEAD -> fix/staging-config) Mount redis_url from the ConfigMap",
+    "9b07d1f Add Redis-backed rate limiter",
+    "3e2d5aa Bump go to 1.23.2",
+    "f18c0b4 Merge pull request #412 from acme/metrics-labels",
+    "sam@mbp ~ % "
+   ]
+  },
+  "sh_vite": {
+   "processing": false,
+   "lines": [
+    "sam@mbp web-dashboard % npm run dev",
+    "",
+    "> web-dashboard@2.4.0 dev",
+    "> vite",
+    "",
+    "",
+    "  VITE v5.4.8  ready in 412 ms",
+    "",
+    "  ➜  Local:   http://localhost:5173/",
+    "  ➜  Network: use --host to expose",
+    "  ➜  press h + enter to show help",
+    "2:41:07 PM [vite] hmr update /src/components/charts/UsageChart.tsx",
+    "2:52:33 PM [vite] hmr update /src/components/charts/Sparkline.tsx"
+   ]
+  },
+  "sh_new": {
+   "processing": false,
+   "lines": [
+    "Last login: Fri Sep 25 14:58:02 on ttys012",
+    "sam@mbp ~ % "
+   ]
+  }
+ },
+ "usage": {
+  "claude": {
+   "five_hour": {
+    "utilization": 62,
+    "rate_per_hour": 8,
+    "resets_in": 8100
+   },
+   "seven_day": {
+    "utilization": 34,
+    "rate_per_hour": 0.4,
+    "resets_in": 273600
+   },
+   "seven_day_sonnet": {
+    "utilization": 100,
+    "rate_per_hour": 0,
+    "resets_in": 187200
+   },
+   "extra_usage": {
+    "is_enabled": true,
+    "monthly_limit": 20000,
+    "used_credits": 12340
+   }
+  },
+  "codex": {
+   "primary_window": {
+    "used_percent": 18,
+    "rate_per_hour": 5,
+    "resets_in": 13200,
+    "limit_window_seconds": 18000
+   },
+   "secondary_window": {
+    "used_percent": 58,
+    "rate_per_hour": 0.5,
+    "resets_in": 172800,
+    "limit_window_seconds": 604800
+   }
+  }
+ },
+ "quota": {
+  "enabled": false,
+  "threshold_percent": 60,
+  "email": {
+   "to": "eng-manager@example.com",
+   "subject": "Claude Code quota extension",
+   "body": "Hi, I am close to my monthly Claude Code limit. Could we raise it for this month?"
+  }
+ },
+ "access_log": {
+  "routes": [
+   [
+    "GET",
+    "/v1/orders/{id}"
+   ],
+   [
+    "GET",
+    "/v1/orders"
+   ],
+   [
+    "POST",
+    "/v1/orders"
+   ],
+   [
+    "GET",
+    "/v1/customers/{id}"
+   ],
+   [
+    "GET",
+    "/healthz"
+   ],
+   [
+    "PATCH",
+    "/v1/orders/{id}"
+   ],
+   [
+    "GET",
+    "/v1/invoices/{id}"
+   ],
+   [
+    "POST",
+    "/v1/payments"
+   ]
+  ],
+  "statuses": [
+   200,
+   200,
+   200,
+   200,
+   200,
+   201,
+   200,
+   304,
+   404,
+   429
+  ],
+  "every_seconds": 0.8,
+  "lines": 18
+ }
+}

@@ -1,0 +1,735 @@
+{
+ "source": "ultrawatch_lib/ui/draw.py tail_lines @ 9704e20 (generated)",
+ "cases": [
+  {
+   "name": "claude_prompt",
+   "text": "⏺ Done.\n\n╭────╮\n│ >  │\n╰────╯\n  ⏵⏵ accept edits on (shift+tab to cycle)\n\n\n",
+   "n": 3,
+   "width": 80,
+   "strip_chrome": false,
+   "expected": [
+    "│ >  │",
+    "╰────╯",
+    "  ⏵⏵ accept edits on (shift+tab to cycle)"
+   ]
+  },
+  {
+   "name": "claude_prompt",
+   "text": "⏺ Done.\n\n╭────╮\n│ >  │\n╰────╯\n  ⏵⏵ accept edits on (shift+tab to cycle)\n\n\n",
+   "n": 3,
+   "width": 80,
+   "strip_chrome": true,
+   "expected": [
+    "╭────╮",
+    "│ >  │",
+    "╰────╯"
+   ]
+  },
+  {
+   "name": "claude_prompt",
+   "text": "⏺ Done.\n\n╭────╮\n│ >  │\n╰────╯\n  ⏵⏵ accept edits on (shift+tab to cycle)\n\n\n",
+   "n": 1,
+   "width": 5,
+   "strip_chrome": false,
+   "expected": [
+    "  ⏵⏵ "
+   ]
+  },
+  {
+   "name": "claude_prompt",
+   "text": "⏺ Done.\n\n╭────╮\n│ >  │\n╰────╯\n  ⏵⏵ accept edits on (shift+tab to cycle)\n\n\n",
+   "n": 5,
+   "width": 4,
+   "strip_chrome": true,
+   "expected": [
+    "⏺ Do",
+    "",
+    "╭───",
+    "│ > ",
+    "╰───"
+   ]
+  },
+  {
+   "name": "claude_prompt",
+   "text": "⏺ Done.\n\n╭────╮\n│ >  │\n╰────╯\n  ⏵⏵ accept edits on (shift+tab to cycle)\n\n\n",
+   "n": 0,
+   "width": 80,
+   "strip_chrome": false,
+   "expected": []
+  },
+  {
+   "name": "claude_prompt",
+   "text": "⏺ Done.\n\n╭────╮\n│ >  │\n╰────╯\n  ⏵⏵ accept edits on (shift+tab to cycle)\n\n\n",
+   "n": 10,
+   "width": 0,
+   "strip_chrome": false,
+   "expected": [
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ]
+  },
+  {
+   "name": "claude_prompt",
+   "text": "⏺ Done.\n\n╭────╮\n│ >  │\n╰────╯\n  ⏵⏵ accept edits on (shift+tab to cycle)\n\n\n",
+   "n": 2,
+   "width": 200,
+   "strip_chrome": true,
+   "expected": [
+    "│ >  │",
+    "╰────╯"
+   ]
+  },
+  {
+   "name": "plain",
+   "text": "line1\nline2   \nline3\n\n",
+   "n": 3,
+   "width": 80,
+   "strip_chrome": false,
+   "expected": [
+    "line1",
+    "line2",
+    "line3"
+   ]
+  },
+  {
+   "name": "plain",
+   "text": "line1\nline2   \nline3\n\n",
+   "n": 3,
+   "width": 80,
+   "strip_chrome": true,
+   "expected": [
+    "line1",
+    "line2",
+    "line3"
+   ]
+  },
+  {
+   "name": "plain",
+   "text": "line1\nline2   \nline3\n\n",
+   "n": 1,
+   "width": 5,
+   "strip_chrome": false,
+   "expected": [
+    "line3"
+   ]
+  },
+  {
+   "name": "plain",
+   "text": "line1\nline2   \nline3\n\n",
+   "n": 5,
+   "width": 4,
+   "strip_chrome": true,
+   "expected": [
+    "line",
+    "line",
+    "line"
+   ]
+  },
+  {
+   "name": "plain",
+   "text": "line1\nline2   \nline3\n\n",
+   "n": 0,
+   "width": 80,
+   "strip_chrome": false,
+   "expected": []
+  },
+  {
+   "name": "plain",
+   "text": "line1\nline2   \nline3\n\n",
+   "n": 10,
+   "width": 0,
+   "strip_chrome": false,
+   "expected": [
+    "",
+    "",
+    ""
+   ]
+  },
+  {
+   "name": "plain",
+   "text": "line1\nline2   \nline3\n\n",
+   "n": 2,
+   "width": 200,
+   "strip_chrome": true,
+   "expected": [
+    "line2",
+    "line3"
+   ]
+  },
+  {
+   "name": "bare_prompt",
+   "text": "output a\noutput b\n❯\n─────────\n━━━━\n",
+   "n": 3,
+   "width": 80,
+   "strip_chrome": false,
+   "expected": [
+    "❯",
+    "─────────",
+    "━━━━"
+   ]
+  },
+  {
+   "name": "bare_prompt",
+   "text": "output a\noutput b\n❯\n─────────\n━━━━\n",
+   "n": 3,
+   "width": 80,
+   "strip_chrome": true,
+   "expected": [
+    "output a",
+    "output b"
+   ]
+  },
+  {
+   "name": "bare_prompt",
+   "text": "output a\noutput b\n❯\n─────────\n━━━━\n",
+   "n": 1,
+   "width": 5,
+   "strip_chrome": false,
+   "expected": [
+    "━━━━"
+   ]
+  },
+  {
+   "name": "bare_prompt",
+   "text": "output a\noutput b\n❯\n─────────\n━━━━\n",
+   "n": 5,
+   "width": 4,
+   "strip_chrome": true,
+   "expected": [
+    "outp",
+    "outp"
+   ]
+  },
+  {
+   "name": "bare_prompt",
+   "text": "output a\noutput b\n❯\n─────────\n━━━━\n",
+   "n": 0,
+   "width": 80,
+   "strip_chrome": false,
+   "expected": []
+  },
+  {
+   "name": "bare_prompt",
+   "text": "output a\noutput b\n❯\n─────────\n━━━━\n",
+   "n": 10,
+   "width": 0,
+   "strip_chrome": false,
+   "expected": [
+    "",
+    "",
+    "",
+    "",
+    ""
+   ]
+  },
+  {
+   "name": "bare_prompt",
+   "text": "output a\noutput b\n❯\n─────────\n━━━━\n",
+   "n": 2,
+   "width": 200,
+   "strip_chrome": true,
+   "expected": [
+    "output a",
+    "output b"
+   ]
+  },
+  {
+   "name": "remaining",
+   "text": "work\nContext left [12% remaining]\n",
+   "n": 3,
+   "width": 80,
+   "strip_chrome": false,
+   "expected": [
+    "work",
+    "Context left [12% remaining]"
+   ]
+  },
+  {
+   "name": "remaining",
+   "text": "work\nContext left [12% remaining]\n",
+   "n": 3,
+   "width": 80,
+   "strip_chrome": true,
+   "expected": [
+    "work"
+   ]
+  },
+  {
+   "name": "remaining",
+   "text": "work\nContext left [12% remaining]\n",
+   "n": 1,
+   "width": 5,
+   "strip_chrome": false,
+   "expected": [
+    "Conte"
+   ]
+  },
+  {
+   "name": "remaining",
+   "text": "work\nContext left [12% remaining]\n",
+   "n": 5,
+   "width": 4,
+   "strip_chrome": true,
+   "expected": [
+    "work"
+   ]
+  },
+  {
+   "name": "remaining",
+   "text": "work\nContext left [12% remaining]\n",
+   "n": 0,
+   "width": 80,
+   "strip_chrome": false,
+   "expected": []
+  },
+  {
+   "name": "remaining",
+   "text": "work\nContext left [12% remaining]\n",
+   "n": 10,
+   "width": 0,
+   "strip_chrome": false,
+   "expected": [
+    "",
+    ""
+   ]
+  },
+  {
+   "name": "remaining",
+   "text": "work\nContext left [12% remaining]\n",
+   "n": 2,
+   "width": 200,
+   "strip_chrome": true,
+   "expected": [
+    "work"
+   ]
+  },
+  {
+   "name": "many_chrome",
+   "text": "real\n───\n───\n───\n───\n───\n───\n───\n───\n───\n───\n",
+   "n": 3,
+   "width": 80,
+   "strip_chrome": false,
+   "expected": [
+    "───",
+    "───",
+    "───"
+   ]
+  },
+  {
+   "name": "many_chrome",
+   "text": "real\n───\n───\n───\n───\n───\n───\n───\n───\n───\n───\n",
+   "n": 3,
+   "width": 80,
+   "strip_chrome": true,
+   "expected": [
+    "real",
+    "───",
+    "───"
+   ]
+  },
+  {
+   "name": "many_chrome",
+   "text": "real\n───\n───\n───\n───\n───\n───\n───\n───\n───\n───\n",
+   "n": 1,
+   "width": 5,
+   "strip_chrome": false,
+   "expected": [
+    "───"
+   ]
+  },
+  {
+   "name": "many_chrome",
+   "text": "real\n───\n───\n───\n───\n───\n───\n───\n───\n───\n───\n",
+   "n": 5,
+   "width": 4,
+   "strip_chrome": true,
+   "expected": [
+    "real",
+    "───",
+    "───"
+   ]
+  },
+  {
+   "name": "many_chrome",
+   "text": "real\n───\n───\n───\n───\n───\n───\n───\n───\n───\n───\n",
+   "n": 0,
+   "width": 80,
+   "strip_chrome": false,
+   "expected": []
+  },
+  {
+   "name": "many_chrome",
+   "text": "real\n───\n───\n───\n───\n───\n───\n───\n───\n───\n───\n",
+   "n": 10,
+   "width": 0,
+   "strip_chrome": false,
+   "expected": [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ]
+  },
+  {
+   "name": "many_chrome",
+   "text": "real\n───\n───\n───\n───\n───\n───\n───\n───\n───\n───\n",
+   "n": 2,
+   "width": 200,
+   "strip_chrome": true,
+   "expected": [
+    "───",
+    "───"
+   ]
+  },
+  {
+   "name": "empty",
+   "text": "",
+   "n": 3,
+   "width": 80,
+   "strip_chrome": false,
+   "expected": []
+  },
+  {
+   "name": "empty",
+   "text": "",
+   "n": 3,
+   "width": 80,
+   "strip_chrome": true,
+   "expected": []
+  },
+  {
+   "name": "empty",
+   "text": "",
+   "n": 1,
+   "width": 5,
+   "strip_chrome": false,
+   "expected": []
+  },
+  {
+   "name": "empty",
+   "text": "",
+   "n": 5,
+   "width": 4,
+   "strip_chrome": true,
+   "expected": []
+  },
+  {
+   "name": "empty",
+   "text": "",
+   "n": 0,
+   "width": 80,
+   "strip_chrome": false,
+   "expected": []
+  },
+  {
+   "name": "empty",
+   "text": "",
+   "n": 10,
+   "width": 0,
+   "strip_chrome": false,
+   "expected": []
+  },
+  {
+   "name": "empty",
+   "text": "",
+   "n": 2,
+   "width": 200,
+   "strip_chrome": true,
+   "expected": []
+  },
+  {
+   "name": "blank_only",
+   "text": "\n\n   \n",
+   "n": 3,
+   "width": 80,
+   "strip_chrome": false,
+   "expected": []
+  },
+  {
+   "name": "blank_only",
+   "text": "\n\n   \n",
+   "n": 3,
+   "width": 80,
+   "strip_chrome": true,
+   "expected": []
+  },
+  {
+   "name": "blank_only",
+   "text": "\n\n   \n",
+   "n": 1,
+   "width": 5,
+   "strip_chrome": false,
+   "expected": []
+  },
+  {
+   "name": "blank_only",
+   "text": "\n\n   \n",
+   "n": 5,
+   "width": 4,
+   "strip_chrome": true,
+   "expected": []
+  },
+  {
+   "name": "blank_only",
+   "text": "\n\n   \n",
+   "n": 0,
+   "width": 80,
+   "strip_chrome": false,
+   "expected": []
+  },
+  {
+   "name": "blank_only",
+   "text": "\n\n   \n",
+   "n": 10,
+   "width": 0,
+   "strip_chrome": false,
+   "expected": []
+  },
+  {
+   "name": "blank_only",
+   "text": "\n\n   \n",
+   "n": 2,
+   "width": 200,
+   "strip_chrome": true,
+   "expected": []
+  },
+  {
+   "name": "unicode_wide",
+   "text": "héllo wörld ✳ café\nсимволы 日本語テキスト\n",
+   "n": 3,
+   "width": 80,
+   "strip_chrome": false,
+   "expected": [
+    "héllo wörld ✳ café",
+    "символы 日本語テキスト"
+   ]
+  },
+  {
+   "name": "unicode_wide",
+   "text": "héllo wörld ✳ café\nсимволы 日本語テキスト\n",
+   "n": 3,
+   "width": 80,
+   "strip_chrome": true,
+   "expected": [
+    "héllo wörld ✳ café",
+    "символы 日本語テキスト"
+   ]
+  },
+  {
+   "name": "unicode_wide",
+   "text": "héllo wörld ✳ café\nсимволы 日本語テキスト\n",
+   "n": 1,
+   "width": 5,
+   "strip_chrome": false,
+   "expected": [
+    "симво"
+   ]
+  },
+  {
+   "name": "unicode_wide",
+   "text": "héllo wörld ✳ café\nсимволы 日本語テキスト\n",
+   "n": 5,
+   "width": 4,
+   "strip_chrome": true,
+   "expected": [
+    "héll",
+    "симв"
+   ]
+  },
+  {
+   "name": "unicode_wide",
+   "text": "héllo wörld ✳ café\nсимволы 日本語テキスト\n",
+   "n": 0,
+   "width": 80,
+   "strip_chrome": false,
+   "expected": []
+  },
+  {
+   "name": "unicode_wide",
+   "text": "héllo wörld ✳ café\nсимволы 日本語テキスト\n",
+   "n": 10,
+   "width": 0,
+   "strip_chrome": false,
+   "expected": [
+    "",
+    ""
+   ]
+  },
+  {
+   "name": "unicode_wide",
+   "text": "héllo wörld ✳ café\nсимволы 日本語テキスト\n",
+   "n": 2,
+   "width": 200,
+   "strip_chrome": true,
+   "expected": [
+    "héllo wörld ✳ café",
+    "символы 日本語テキスト"
+   ]
+  },
+  {
+   "name": "tabs_cr",
+   "text": "a\tb\r\nc  \t\r\n",
+   "n": 3,
+   "width": 80,
+   "strip_chrome": false,
+   "expected": [
+    "a\tb",
+    "c"
+   ]
+  },
+  {
+   "name": "tabs_cr",
+   "text": "a\tb\r\nc  \t\r\n",
+   "n": 3,
+   "width": 80,
+   "strip_chrome": true,
+   "expected": [
+    "a\tb",
+    "c"
+   ]
+  },
+  {
+   "name": "tabs_cr",
+   "text": "a\tb\r\nc  \t\r\n",
+   "n": 1,
+   "width": 5,
+   "strip_chrome": false,
+   "expected": [
+    "c"
+   ]
+  },
+  {
+   "name": "tabs_cr",
+   "text": "a\tb\r\nc  \t\r\n",
+   "n": 5,
+   "width": 4,
+   "strip_chrome": true,
+   "expected": [
+    "a\tb",
+    "c"
+   ]
+  },
+  {
+   "name": "tabs_cr",
+   "text": "a\tb\r\nc  \t\r\n",
+   "n": 0,
+   "width": 80,
+   "strip_chrome": false,
+   "expected": []
+  },
+  {
+   "name": "tabs_cr",
+   "text": "a\tb\r\nc  \t\r\n",
+   "n": 10,
+   "width": 0,
+   "strip_chrome": false,
+   "expected": [
+    "",
+    ""
+   ]
+  },
+  {
+   "name": "tabs_cr",
+   "text": "a\tb\r\nc  \t\r\n",
+   "n": 2,
+   "width": 200,
+   "strip_chrome": true,
+   "expected": [
+    "a\tb",
+    "c"
+   ]
+  },
+  {
+   "name": "interleaved_blank",
+   "text": "x\n\n❯\n\ny\n❯\n\n",
+   "n": 3,
+   "width": 80,
+   "strip_chrome": false,
+   "expected": [
+    "",
+    "y",
+    "❯"
+   ]
+  },
+  {
+   "name": "interleaved_blank",
+   "text": "x\n\n❯\n\ny\n❯\n\n",
+   "n": 3,
+   "width": 80,
+   "strip_chrome": true,
+   "expected": [
+    "❯",
+    "",
+    "y"
+   ]
+  },
+  {
+   "name": "interleaved_blank",
+   "text": "x\n\n❯\n\ny\n❯\n\n",
+   "n": 1,
+   "width": 5,
+   "strip_chrome": false,
+   "expected": [
+    "❯"
+   ]
+  },
+  {
+   "name": "interleaved_blank",
+   "text": "x\n\n❯\n\ny\n❯\n\n",
+   "n": 5,
+   "width": 4,
+   "strip_chrome": true,
+   "expected": [
+    "x",
+    "",
+    "❯",
+    "",
+    "y"
+   ]
+  },
+  {
+   "name": "interleaved_blank",
+   "text": "x\n\n❯\n\ny\n❯\n\n",
+   "n": 0,
+   "width": 80,
+   "strip_chrome": false,
+   "expected": []
+  },
+  {
+   "name": "interleaved_blank",
+   "text": "x\n\n❯\n\ny\n❯\n\n",
+   "n": 10,
+   "width": 0,
+   "strip_chrome": false,
+   "expected": [
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ]
+  },
+  {
+   "name": "interleaved_blank",
+   "text": "x\n\n❯\n\ny\n❯\n\n",
+   "n": 2,
+   "width": 200,
+   "strip_chrome": true,
+   "expected": [
+    "",
+    "y"
+   ]
+  }
+ ]
+}

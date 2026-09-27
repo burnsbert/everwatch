@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>Everwatch</title>
+  <link rel="icon" href="img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/chrome.css">
+  <link rel="stylesheet" href="css/sessions.css">
+  <link rel="stylesheet" href="css/overlays.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <link rel="stylesheet" href="css/settings.css">
+  <link rel="stylesheet" href="css/reply.css">
+  <script type="module" src="js/main.mjs"></script>
+</head>
+<body>
+  <!-- Icon sprite: static, trusted markup only. Session data is never inserted as HTML. -->
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="ew-tile" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#383a42"/>
+        <stop offset="1" stop-color="#131417"/>
+      </linearGradient>
+    </defs>
+    <symbol id="i-logo" viewBox="0 0 32 32">
+      <rect width="32" height="32" rx="7.2" fill="url(#ew-tile)"/>
+      <circle cx="16" cy="16" r="8.9" fill="none" stroke="#f4f5f8" stroke-width="3.6" stroke-linecap="round" stroke-dasharray="39 56" transform="rotate(-20 16 16)"/>
+      <circle cx="16" cy="16" r="4.6" fill="#ffaf00"/>
+    </symbol>
+    <!-- §4.1: one set on a 16×16 grid, round caps/joins, outline only (dots
+         filled). No stroke-width here: the host svg sets it in base.css. -->
+    <symbol id="i-search" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="4.5"/><path d="M10.3 10.3 13.5 13.5"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 4.17A5 5 0 1 1 8 3.5"/><path d="M6.2 1.7 8 3.5 6.2 5.3"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v10M3 8h10"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6.7 1.8h2.6l.4 1.5 1.3.6 1.4-.8 1.8 1.8-.8 1.4.6 1.3 1.5.4v2.6l-1.5.4-.6 1.3.8 1.4-1.8 1.8-1.4-.8-1.3.6-.4 1.5H6.7l-.4-1.5-1.3-.6-1.4.8-1.8-1.8.8-1.4-.6-1.3-1.5-.4V8l1.5-.4.6-1.3-.8-1.4 1.8-1.8 1.4.8 1.3-.6z" transform="translate(0 -.8) scale(1 .95)"/><circle cx="8" cy="8" r="2.1"/></symbol>
+    <symbol id="i-help" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="1.75" y="3.75" width="12.5" height="8.5" rx="2"/><path d="M4.5 6.5h.01M7 6.5h.01M9.5 6.5h.01M12 6.5h.01M5.5 9.5h5"/></symbol>
+    <symbol id="i-split" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="1.75" y="2.75" width="12.5" height="10.5" rx="2"/><path d="M8 2.75v10.5"/></symbol>
+    <symbol id="i-list" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4.5h7.5M6 8h7.5M6 11.5h7.5"/><circle cx="3" cy="4.5" r="1" fill="currentColor" stroke="none"/><circle cx="3" cy="8" r="1" fill="currentColor" stroke="none"/><circle cx="3" cy="11.5" r="1" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="5" height="5" rx="1.25"/><rect x="9" y="2" width="5" height="5" rx="1.25"/><rect x="2" y="9" width="5" height="5" rx="1.25"/><rect x="9" y="9" width="5" height="5" rx="1.25"/></symbol>
+    <symbol id="i-sidebar" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="1.75" y="2.75" width="12.5" height="10.5" rx="2"/><path d="M6 2.75v10.5M3.5 5.5h.75M3.5 7.75h.75"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 6.25 8 9.75l3.5-3.5"/></symbol>
+    <symbol id="i-chevron-left" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9.75 4.5 6.25 8l3.5 3.5"/></symbol>
+    <symbol id="i-sort" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13V3M2.75 5.25 5 3l2.25 2.25M11 3v10M8.75 10.75 11 13l2.25-2.25"/></symbol>
+    <symbol id="i-go" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3H4.5a1.75 1.75 0 0 0-1.75 1.75v6.75c0 .97.78 1.75 1.75 1.75h6.75c.97 0 1.75-.78 1.75-1.75V9"/><path d="M9.5 2.75h3.75V6.5M13.25 2.75 7.5 8.5"/></symbol>
+    <symbol id="i-external" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11 11 5M6 5h5v5"/></symbol>
+    <symbol id="i-close" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"/></symbol>
+    <symbol id="i-check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-6.5"/></symbol>
+    <symbol id="i-gauge" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M2.75 11.5a5.25 5.25 0 1 1 10.5 0"/><path d="M8 11.5l2.5-3.5"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 2.75l2.75 2.75-7.5 7.5H3v-2.75z"/><path d="M9 4.25 11.75 7"/></symbol>
+    <symbol id="i-ellipsis" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="3.5" cy="8" r="1.1" fill="currentColor" stroke="none"/><circle cx="8" cy="8" r="1.1" fill="currentColor" stroke="none"/><circle cx="12.5" cy="8" r="1.1" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-check-circle" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="5.75"/><path d="M5.5 8.25l1.75 1.75 3.25-3.5"/></symbol>
+    <symbol id="i-warn" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.75 14.25 13.25H1.75z"/><path d="M8 6.5v3"/><circle cx="8" cy="11.25" r=".8" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-x-circle" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="5.75"/><path d="M6 6l4 4M10 6l-4 4"/></symbol>
+    <symbol id="i-info" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="5.75"/><path d="M8 7.25v3.75"/><circle cx="8" cy="5" r=".8" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-minus-circle" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="5.75"/><path d="M5.25 8h5.5"/></symbol>
+    <symbol id="i-hourglass" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 2.5h7M4.5 13.5h7"/><path d="M5.5 2.5v1c0 2 2.5 3 2.5 4.5S5.5 10.5 5.5 12.5v1M10.5 2.5v1c0 2-2.5 3-2.5 4.5s2.5 2.5 2.5 4.5v1"/></symbol>
+    <symbol id="i-nosign" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="5.75"/><path d="M3.95 3.95l8.1 8.1"/></symbol>
+    <symbol id="i-terminal" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="1.75" y="2.75" width="12.5" height="10.5" rx="2"/><path d="M4.5 6.25 6.5 8l-2 1.75M8.5 10h3"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3.25" y="7" width="9.5" height="6.5" rx="1.5"/><path d="M5.25 7V5.25a2.75 2.75 0 0 1 5.5 0V7"/><circle cx="8" cy="10.25" r=".8" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-plug" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2.5v3M10 2.5v3M4 5.5h8v2a4 4 0 0 1-8 0zM8 11.5v2.25"/></symbol>
+    <symbol id="i-sparkle" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2.5l1.3 3.7L12 7.5l-3.7 1.3L7 12.5 5.7 8.8 2 7.5l3.7-1.3z"/><path d="M12.25 10l.55 1.2 1.2.55-1.2.55-.55 1.2-.55-1.2-1.2-.55 1.2-.55z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-filter-empty" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="4.5"/><path d="M10.3 10.3 13.5 13.5M5 7h4"/></symbol>
+    <symbol id="i-agent-claude" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.5v11M3.24 5.25l9.52 5.5M3.24 10.75l9.52-5.5"/></symbol>
+    <symbol id="i-agent-codex" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4.5 2.75 8 6 11.5M10 4.5 13.25 8 10 11.5"/></symbol>
+    <!-- T046 theme toggle: sun (light) / moon (dark) / half-filled circle (system, macOS's own "Auto" convention) -->
+    <symbol id="i-theme-sun" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.5 3.5l1.4 1.4M11.1 11.1l1.4 1.4M3.5 12.5l1.4-1.4M11.1 4.9l1.4-1.4"/></symbol>
+    <symbol id="i-theme-moon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M13.25 9.65A5.5 5.5 0 1 1 6.35 2.75a4.4 4.4 0 0 0 6.9 6.9z"/></symbol>
+    <symbol id="i-theme-auto" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="5.75"/><path d="M8 2.25a5.75 5.75 0 0 1 0 11.5" fill="currentColor" stroke="none"/></symbol>
+  </svg>
+
+  <div class="app" id="app" data-view="split">
+    <header class="toolbar" role="banner">
+      <!-- §4.2 / D3: browser mode only; the native title bar already says
+           "Everwatch", and the tab/agent counts live in the status bar. -->
+      <div class="brand">
+        <svg class="brand-logo" aria-hidden="true"><use href="#i-logo"/></svg>
+        <h1 class="brand-name">Everwatch</h1>
+      </div>
+      <button type="button" class="waiting-pill" id="waiting-pill" hidden>
+        <span class="glyph glyph--waiting" aria-hidden="true"></span>
+        <span class="waiting-pill-text" id="waiting-pill-text"></span>
+      </button>
+      <button type="button" class="status-chip" id="status-chip" popovertarget="status-pop" data-level="muted">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span class="status-text" id="status-text">Connecting…</span>
+      </button>
+      <div class="status-pop" id="status-pop" popover role="dialog" aria-labelledby="status-pop-title">
+        <p class="status-pop-title" id="status-pop-title">Status</p>
+        <p class="status-pop-body" id="status-pop-body"></p>
+        <button type="button" class="btn btn--small" id="status-diagnose">Diagnose…</button>
+      </div>
+      <div class="toolbar-spacer"></div>
+
+      <div class="search" role="search">
+        <svg class="search-icon" aria-hidden="true"><use href="#i-search"/></svg>
+        <input id="filter" class="search-input" type="search" placeholder="Filter sessions" autocomplete="off"
+               spellcheck="false" aria-label="Filter sessions (/ or ⌘F)" aria-describedby="filter-count" aria-controls="session-list">
+        <span class="search-count" id="filter-count" aria-live="polite"></span>
+        <kbd class="search-kbd" id="filter-kbd" aria-hidden="true">/</kbd>
+      </div>
+
+      <label class="select-pill" data-tip="Sort sessions  s">
+        <span class="visually-hidden">Sort</span>
+        <select id="sort-select" aria-label="Sort sessions">
+          <option value="natural">Natural</option>
+          <option value="attention">Attention</option>
+          <option value="agents">Agents</option>
+          <option value="activity">Activity</option>
+          <option value="path">Path</option>
+        </select>
+        <svg class="select-chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+        <svg class="icon select-icon" aria-hidden="true"><use href="#i-sort"/></svg>
+      </label>
+
+      <!-- AI sessions only ↔ all sessions (persisted `agents_only`). -->
+      <button type="button" class="icon-btn" id="btn-agents" aria-pressed="false" aria-label="Show Claude Code and Codex sessions only"><svg class="icon" aria-hidden="true"><use href="#i-sparkle"/></svg></button>
+
+      <div class="segmented" role="radiogroup" aria-label="View" id="view-switch">
+        <button type="button" role="radio" data-view="split" data-tip="Split view  ⌘1" aria-label="Split view"><svg class="icon" aria-hidden="true"><use href="#i-split"/></svg></button>
+        <button type="button" role="radio" data-view="list" data-tip="List view  ⌘2" aria-label="List view"><svg class="icon" aria-hidden="true"><use href="#i-list"/></svg></button>
+        <button type="button" role="radio" data-view="grid" data-tip="Grid view  ⌘3" aria-label="Grid view"><svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg></button>
+      </div>
+
+      <span class="toolbar-divider" aria-hidden="true"></span>
+
+      <div class="toolbar-buttons">
+        <button type="button" class="icon-btn" id="btn-refresh" data-tip="Refresh now  r" aria-label="Refresh now"><svg class="icon" aria-hidden="true"><use href="#i-refresh"/></svg></button>
+        <button type="button" class="icon-btn" id="btn-new" data-tip="New iTerm2 tab  n" aria-label="New iTerm2 tab"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></button>
+        <button type="button" class="icon-btn" id="btn-help" data-tip="Keyboard shortcuts  ?" aria-label="Keyboard shortcuts"><svg class="icon" aria-hidden="true"><use href="#i-help"/></svg></button>
+        <button type="button" class="icon-btn" id="btn-theme" aria-label="Switch theme"><svg class="icon" aria-hidden="true"><use href="#i-theme-moon"/></svg></button>
+        <button type="button" class="icon-btn" id="btn-settings" data-tip="Settings  ⌘," aria-label="Settings"><svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg></button>
+      </div>
+    </header>
+
+    <main class="content" id="content" aria-label="Sessions"></main>
+
+    <footer class="statusbar" id="statusbar" data-fit="0">
+      <!-- §4.18: always visible, can't be hidden (user decision D4). -->
+      <div class="tokens" id="tokens" role="group" aria-label="Tokens Used">
+        <span class="tokens-label" aria-hidden="true"><span class="tokens-label-full">Tokens Used</span><span class="tokens-label-short">Tokens</span></span>
+        <div class="tokens-groups" id="tokens-groups"></div>
+        <!-- T046: on-pace-to-run-out and hit warnings, as their own small
+             chips side by side (never embedded in a meter item). -->
+        <div class="tokens-alerts" id="tokens-alerts" aria-label="Quota warnings"></div>
+      </div>
+      <div class="statusbar-spacer"></div>
+      <button type="button" class="filter-chip" id="filter-chip" hidden>
+        <span class="filter-chip-text" id="filter-chip-text"></span>
+        <svg class="icon icon--tiny" aria-hidden="true"><use href="#i-close"/></svg>
+      </button>
+      <span class="status-counts" id="counts">—</span>
+      <div class="hints" id="hints" aria-label="Keyboard hints"></div>
+    </footer>
+
+    <div class="toasts" id="toasts" role="status" aria-live="polite" aria-relevant="additions"></div>
+  </div>
+
+  <!-- §4.19: the app's one tooltip, shared by the whole document
+       (views/tooltip.mjs). Content is only ever textContent. -->
+  <div id="tooltip" role="tooltip"></div>
+
+  <dialog class="help-sheet" id="help" aria-labelledby="help-title">
+    <header class="help-head">
+      <h2 id="help-title">Keyboard Shortcuts</h2>
+      <p class="help-sub">Press any key to close</p>
+    </header>
+    <div class="help-body" id="help-body"></div>
+  </dialog>
+
+  <dialog class="confirm-dialog" id="confirm-dialog" aria-labelledby="confirm-title">
+    <p class="confirm-title" id="confirm-title"></p>
+    <p class="confirm-detail" id="confirm-detail"></p>
+    <div class="confirm-actions">
+      <button type="button" class="btn" id="confirm-cancel">Cancel</button>
+      <button type="button" class="btn btn--primary" id="confirm-ok">OK</button>
+    </div>
+  </dialog>
+
+  <dialog class="palette" id="palette" aria-label="Command palette">
+    <div class="palette-search">
+      <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+      <input id="palette-input" class="palette-input" type="text" autocomplete="off" spellcheck="false"
+             role="combobox" aria-expanded="true" aria-controls="palette-list" aria-autocomplete="list"
+             aria-label="Command palette">
+      <button type="button" class="palette-mode-btn" id="palette-mode-btn"></button>
+    </div>
+    <div class="palette-list" id="palette-list" role="listbox" aria-label="Results"></div>
+    <p class="palette-empty" id="palette-empty" hidden></p>
+    <footer class="palette-foot">
+      <span class="palette-hint"><kbd>↑↓</kbd>move</span>
+      <span class="palette-hint"><kbd>⏎</kbd>select</span>
+      <span class="palette-hint"><kbd>esc</kbd>close</span>
+    </footer>
+  </dialog>
+
+  <dialog class="confirm-dialog quota-dialog" id="quota-dialog" aria-labelledby="quota-title">
+    <p class="confirm-title" id="quota-title">Approaching your monthly limit</p>
+    <p class="confirm-detail" id="quota-body"></p>
+    <div class="confirm-actions">
+      <button type="button" class="btn" id="quota-skip">Skip This Month</button>
+      <button type="button" class="btn btn--primary" id="quota-draft">Draft Email</button>
+    </div>
+  </dialog>
+</body>
+</html>

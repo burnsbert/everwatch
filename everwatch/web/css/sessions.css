@@ -1,0 +1,839 @@
+/* Everwatch UI: content area, split view, session rows, glyphs,
+ * sparklines, preview, list view, grid view, compact view, projects panel.
+ * docs/design/VISUAL_SPEC.md §4.3–§4.7, §4.17, §6 (WP-B). Every color,
+ * font size, radius and shadow comes from tokens.css. */
+
+/* ---------------------------------------------------------------- content */
+
+.content { position: relative; min-height: 0; overflow: hidden; transition: margin-left var(--dur-3) var(--ease-out); }
+.content > * { position: absolute; inset: 0; }
+/* Reflow the content area rather than float the projects panel over it, so
+   it never steals clicks from the preview / grid tiles underneath. Below
+   the narrow (P-23) breakpoint there isn't room to reflow the *expanded*
+   panel (it would squeeze the session list to nothing), so that state
+   overlays instead — see the responsive block near the bottom of this
+   file. The collapsed rail is slim enough to always reflow, at any width. */
+.app.projects-visible .content { margin-left: var(--rail-w); }
+.app.projects-open .content { margin-left: var(--sidebar-w); }
+
+/* split view ----------------------------------------------------------- */
+
+.split {
+  display: grid;
+  grid-template-columns: var(--list-w, 42%) 9px minmax(0, 1fr);
+  min-height: 0;
+  background: var(--bg-pane);
+}
+.split.is-resizing { cursor: col-resize; user-select: none; -webkit-user-select: none; }
+
+.list-pane {
+  display: flex; flex-direction: column;
+  min-width: 0; min-height: 0;
+  background: var(--bg-pane);
+}
+.pane-head {
+  display: flex; align-items: baseline; gap: var(--sp-2);
+  padding: 10px var(--sp-4) var(--sp-1h);
+  user-select: none; -webkit-user-select: none;
+}
+.pane-title { font: var(--weight-semibold) var(--text-small); color: var(--fg-dim); }
+.pane-count { font: var(--weight-regular) var(--text-small); color: var(--idle); font-variant-numeric: tabular-nums; }
+
+/* §4.6: the splitter always shows a 1px hairline; hover/drag turn it blue. */
+.splitter {
+  position: relative;
+  cursor: col-resize;
+  margin-left: -5px;
+  width: 9px;
+  z-index: 2;
+  touch-action: none;
+}
+.splitter::after {
+  content: "";
+  position: absolute; top: 0; bottom: 0; left: 4px;
+  width: 1px;
+  background: var(--border);
+  transition: background-color var(--dur-1) var(--ease-standard);
+}
+.splitter:hover::after, .split.is-resizing .splitter::after, .splitter:focus-visible::after { background: var(--focus); }
+.splitter:focus-visible { outline: none; }
+
+/* session list ----------------------------------------------------------- */
+
+.session-list-wrap { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.session-list {
+  flex: 1; min-height: 0;
+  overflow-y: auto;
+  padding: var(--sp-1h);
+  padding-top: 0;
+  scroll-padding: var(--sp-2) 0;
+  overscroll-behavior: contain;
+}
+/* On macOS the selection color is the focus indicator (§4.3); the list
+   itself only shows a ring when there's nothing to select. */
+.session-list:focus-visible { outline: none; }
+.session-list:focus-visible:empty { box-shadow: var(--ring-focus-inset); }
+
+.row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) auto;
+  column-gap: 10px;
+  align-items: center;
+  min-height: var(--row-h);
+  margin: 1px 0;
+  padding: 0 10px;
+  border-radius: var(--radius-s);
+  color: var(--fg);
+  user-select: none; -webkit-user-select: none;
+  transition: background-color var(--dur-1) var(--ease-standard);
+}
+.row > .glyph { justify-self: center; }
+.row:hover { background: var(--bg-hover); }
+
+.row-main { min-width: 0; display: flex; flex-direction: column; gap: var(--sp-0h); }
+.row-line1, .row-line2 { min-width: 0; display: flex; align-items: center; gap: var(--sp-1h); }
+.row-name {
+  min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font: var(--weight-medium) var(--text-body);
+  font-family: var(--font-session);
+  font-size: var(--session-name-size);
+}
+/* Plain shells: one step quieter than AI sessions (with the "Shell" badge). */
+.row.is-shell .row-name { font-weight: var(--weight-regular); }
+/* Rename affordance (P-48): a pencil next to the name, in addition to the
+   existing double-click-the-name / `l` / context-menu "Rename…" / palette
+   paths — visible on hover/focus so it doesn't have to be discovered by
+   accident, hidden while already editing. */
+.row-edit-icon {
+  flex: none;
+  width: 18px; height: 18px;
+  display: grid; place-items: center;
+  border: 0; border-radius: var(--radius-xs);
+  background: transparent;
+  color: var(--fg-dim);
+  opacity: 0;
+  transition: opacity var(--dur-1) var(--ease-out), background-color var(--dur-1), color var(--dur-1);
+}
+.row-edit-icon:hover { background: color-mix(in srgb, var(--fg) 8%, transparent); color: var(--fg); }
+.row:hover .row-edit-icon, .row:focus-within .row-edit-icon, .row-edit-icon:focus-visible { opacity: 1; }
+.row.is-editing .row-edit-icon { display: none; }
+.row-path {
+  min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  direction: rtl; text-align: left;
+  font: var(--weight-regular) var(--mono-small);
+  color: var(--fg-dim);
+}
+.row mark {
+  background: var(--mark-bg);
+  color: inherit;
+  border-radius: var(--radius-bar);
+  padding: 0 0.5px;
+}
+.row-meta {
+  display: flex; flex-direction: column; align-items: flex-end; gap: var(--sp-1);
+  min-width: 0;
+}
+.row-age {
+  min-height: 14px;
+  font: var(--weight-regular) var(--text-small);
+  color: var(--idle);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.row-tags { display: inline-flex; align-items: center; gap: var(--sp-1h); }
+.row-tab {
+  min-width: 3ch; text-align: right;
+  font: var(--weight-regular) var(--mono-small);
+  color: var(--fg-dim);
+}
+
+/* ---------------------------------------------------------------- agent badge (§4.17) */
+
+/* Word + glyph + hue, on its own opaque surface so it reads the same on
+   every row background. The shape (a small rounded rectangle with text)
+   is what separates it from project chips (circles) and state glyphs. */
+.badge {
+  display: inline-flex; align-items: center; gap: var(--sp-1); flex: none;
+  height: 18px; padding: 0 var(--sp-1h) 0 5px;
+  border-radius: var(--radius-xs);
+  font: var(--weight-semibold) var(--text-small);
+  white-space: nowrap;
+  background: var(--badge-bg);
+  color: var(--fg-dim);
+}
+.badge-glyph { width: 10px; height: 10px; flex: none; stroke-width: 1.75; }
+.badge--claude { background: var(--agent-claude-bg); color: var(--agent-claude); }
+.badge--codex { background: var(--agent-codex-bg); color: var(--agent-codex); }
+/* Plain shells: outlined and quiet, so "AI session" vs "shell" is obvious
+   at a glance whether or not the row is highlighted. */
+.badge--plain { background: transparent; color: var(--fg-dim); box-shadow: var(--ring-badge-shell); font-weight: var(--weight-medium); }
+.badge--self, .badge--dashboard { background: var(--badge-bg); color: var(--fg-dim); }
+.is-selected .badge--claude, .is-selected .badge--codex { box-shadow: var(--ring-badge-selected); }
+/* Compact form: glyph only on the same tinted square; the tooltip and
+   aria-label carry "Claude Code" / "Codex". */
+html[data-mode="compact"] .badge { width: 18px; padding: 0; justify-content: center; }
+html[data-mode="compact"] .badge-text { display: none; }
+html[data-mode="compact"] .badge-glyph { width: 11px; height: 11px; }
+
+/* ---------------------------------------------------------------- project chip (P-61, §3.5) */
+
+.tab-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  box-shadow: var(--ring-chip);
+  flex: none;
+}
+.tab-dot--red { background: var(--tab-red); }
+.tab-dot--orange { background: var(--tab-orange); }
+.tab-dot--yellow { background: var(--tab-yellow); }
+.tab-dot--green { background: var(--tab-green); }
+.tab-dot--blue { background: var(--tab-blue); }
+.tab-dot--purple { background: var(--tab-purple); }
+.tab-dot--gray { background: var(--tab-gray); }
+.tab-dot--none {
+  /* dashed, so "no project" never reads as the solid idle-state ring */
+  box-sizing: border-box;
+  background: transparent;
+  border: 1px dashed var(--fg-dim);
+  box-shadow: none;
+}
+
+/* A solid dot + the project name (or "No project"): a real button (click,
+   or Tab + Enter/Space) opening the same menu as right-click. Borderless
+   — hairlines, not boxes — and never next to the agent badge (chip =
+   where, badge = who). */
+.row-project {
+  display: inline-flex; align-items: center; gap: 5px; flex: none;
+  height: 18px; padding: 0 var(--sp-1) 0 3px; margin-left: -3px;
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: var(--fg-dim);
+  font: var(--weight-medium) var(--text-small);
+  white-space: nowrap;
+  max-width: 120px;
+}
+.row-project:hover { background: color-mix(in srgb, var(--fg) 8%, transparent); color: var(--fg); }
+.row-project:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.row-project-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row:not(.has-project) .row-project { color: var(--idle); }
+.tile-project { max-width: 140px; }
+
+/* ------------------------------------------------- project-tinted rows/tiles (§4.3, T046) */
+/* User request: a session assigned to a project reads as that project's
+   color at a glance, beyond the small dot. Dark theme tints the title text
+   itself — the tab-color hue is already ≥ 4.5:1 on every row/tile
+   background it can sit on (plain, selected, waiting), so no lightening
+   was needed. Light theme tints the row/tile background instead (the
+   title stays --fg): selection and the waiting strip always win over a
+   mere tint, so a merely-tinted row is never mistaken for either. Gated on
+   `data-resolved-theme` (set once by main.mjs's syncTheme) rather than
+   folding "which theme" into the token values, since a tile's untinted
+   background (--bg-elev) differs from a row's (--bg-pane) — one token
+   pair can't silently no-op for both. */
+html[data-resolved-theme="dark"] .row[data-project-color="red"] .row-name,
+html[data-resolved-theme="dark"] .tile[data-project-color="red"] .tile-name { color: var(--project-red-text); }
+html[data-resolved-theme="dark"] .row[data-project-color="yellow"] .row-name,
+html[data-resolved-theme="dark"] .tile[data-project-color="yellow"] .tile-name { color: var(--project-yellow-text); }
+html[data-resolved-theme="dark"] .row[data-project-color="green"] .row-name,
+html[data-resolved-theme="dark"] .tile[data-project-color="green"] .tile-name { color: var(--project-green-text); }
+html[data-resolved-theme="dark"] .row[data-project-color="blue"] .row-name,
+html[data-resolved-theme="dark"] .tile[data-project-color="blue"] .tile-name { color: var(--project-blue-text); }
+html[data-resolved-theme="dark"] .row[data-project-color="purple"] .row-name,
+html[data-resolved-theme="dark"] .tile[data-project-color="purple"] .tile-name { color: var(--project-purple-text); }
+
+html[data-resolved-theme="light"] .row[data-project-color="red"]:not(.is-selected):not(.is-waiting),
+html[data-resolved-theme="light"] .tile[data-project-color="red"] { background: var(--project-red-tint); }
+html[data-resolved-theme="light"] .row[data-project-color="yellow"]:not(.is-selected):not(.is-waiting),
+html[data-resolved-theme="light"] .tile[data-project-color="yellow"] { background: var(--project-yellow-tint); }
+html[data-resolved-theme="light"] .row[data-project-color="green"]:not(.is-selected):not(.is-waiting),
+html[data-resolved-theme="light"] .tile[data-project-color="green"] { background: var(--project-green-tint); }
+html[data-resolved-theme="light"] .row[data-project-color="blue"]:not(.is-selected):not(.is-waiting),
+html[data-resolved-theme="light"] .tile[data-project-color="blue"] { background: var(--project-blue-tint); }
+html[data-resolved-theme="light"] .row[data-project-color="purple"]:not(.is-selected):not(.is-waiting),
+html[data-resolved-theme="light"] .tile[data-project-color="purple"] { background: var(--project-purple-tint); }
+
+/* ---------------------------------------------------------------- row states (P-38, D1-A) */
+
+.row.is-fresh .row-age, .row-age.is-fresh-note { color: var(--busy); font-weight: var(--weight-medium); }
+.row.is-waiting { background: var(--row-waiting-bg); }
+.row.is-waiting::before {
+  content: "";
+  position: absolute; left: 2px; top: var(--sp-2); bottom: var(--sp-2);
+  width: 3px; border-radius: var(--radius-bar);
+  background: var(--attention-glyph);
+}
+.row.is-waiting .row-name { font-weight: var(--weight-semibold); }
+.row.is-waiting .row-age { color: var(--attention); font-weight: var(--weight-semibold); }
+.row.is-waiting:hover:not(.is-selected) { background: color-mix(in srgb, var(--attention) 6%, var(--row-waiting-bg)); }
+
+/* One neutral tinted selection for every kind (D1-A): text keeps its own
+   token, except --idle, which isn't AA on the selection → --fg-dim. The
+   waiting bar and amber age stay. */
+.row.is-selected { background: var(--bg-selected); }
+html[data-key="0"] .row.is-selected { background: var(--bg-selected-inactive); }
+.row.is-selected .row-age:not(.is-fresh-note) { color: var(--fg-dim); }
+.row.is-selected.is-waiting .row-age { color: var(--attention); }
+.row.is-selected.is-fresh .row-age { color: var(--busy); }
+.row.is-selected .row-project { color: var(--fg-dim); }
+.row.is-selected .glyph--idle { --glyph-color: var(--fg-dim); }
+
+/* flash (→ waiting): soft amber fading back to the row's resting bg */
+.row.is-flash {
+  animation: flash calc(var(--flash-ms, 1500) * 1ms) var(--ease-standard);
+}
+@keyframes flash {
+  0%, 35% { background-color: var(--attention-soft); }
+}
+
+.row-editor {
+  width: 100%; min-width: 0;
+  height: var(--control-h-sm); margin: -3px 0;
+  padding: 0 var(--sp-1h);
+  border: 1px solid var(--focus);
+  border-radius: var(--radius-xs);
+  background: var(--bg-pane);
+  color: var(--fg);
+  font: var(--weight-medium) var(--text-body);
+  box-shadow: var(--focus-ring);
+  user-select: text; -webkit-user-select: text;
+}
+.row-editor:focus-visible { outline: none; }
+
+.group-header {
+  display: flex; align-items: center;
+  height: var(--control-h-sm);
+  margin-top: var(--sp-2);
+  padding: 0 10px;
+  font: var(--weight-semibold) var(--text-small);
+  color: var(--fg-dim);
+  user-select: none; -webkit-user-select: none;
+}
+.session-list > .group-header:first-child { margin-top: 0; }
+
+.list-empty {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: var(--sp-2); padding: var(--sp-6); text-align: center;
+}
+
+/* ---------------------------------------------------------------- glyphs (P-34, P-35) */
+
+.glyph {
+  --glyph-color: var(--idle);
+  position: relative;
+  display: inline-block;
+  width: 10px; height: 10px;
+  flex: none;
+  border-radius: 50%;
+}
+.glyph--waiting {
+  --glyph-color: var(--attention-glyph);
+  background: var(--glyph-color);
+}
+.glyph--waiting::after {
+  content: "";
+  position: absolute; inset: -3px;
+  border-radius: 50%;
+  border: 1.5px solid var(--glyph-color);
+  opacity: 0.5;
+  animation: halo 2.4s ease-out infinite;
+}
+.glyph--busy {
+  --glyph-color: var(--busy);
+  border: 1.5px solid color-mix(in srgb, var(--glyph-color) 28%, transparent);
+  border-top-color: var(--glyph-color);
+  border-right-color: var(--glyph-color);
+  animation: spin 0.9s linear infinite;
+}
+.glyph--busy.is-static { animation: none; }
+.glyph--idle {
+  border: 1.5px solid var(--glyph-color);
+}
+.glyph--active {
+  --glyph-color: var(--fg-dim);
+}
+.glyph--active::after {
+  content: "";
+  position: absolute; inset: 3px;
+  border-radius: 50%;
+  background: var(--glyph-color);
+}
+.glyph--quiet, .glyph--none { visibility: hidden; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes halo {
+  0% { transform: scale(0.85); opacity: 0.6; }
+  70%, 100% { transform: scale(1.45); opacity: 0; }
+}
+@keyframes breathe { 50% { opacity: 0.35; } }
+
+/* ---------------------------------------------------------------- activity strips (W-5, §4.6.1) */
+
+/* 60 one-minute segments over a 1px baseline, so an empty window still
+   reads as a timeline. Only busy and waiting are meant to stand out. */
+.spark {
+  display: inline-flex; align-items: stretch; gap: 1px;
+  overflow: hidden;
+  border-radius: var(--radius-xs);
+  background: linear-gradient(var(--border), var(--border)) bottom / 100% 1px no-repeat;
+  flex: none;
+}
+.spark-seg { flex: 0 0 auto; }
+.spark-seg--waiting { background: var(--attention-glyph); }
+.spark-seg--busy { background: var(--busy); }
+.spark-seg--active { background: color-mix(in srgb, var(--fg) 35%, transparent); }
+.spark-seg--idle, .spark-seg--quiet { background: color-mix(in srgb, var(--fg) 8%, transparent); }
+.spark-seg--none { background: transparent; }
+
+.row-spark { width: 32px; height: 8px; }
+.tile-spark { width: auto; height: 3px; margin: 0; border-radius: 0; }
+
+.preview-spark { width: 160px; height: 8px; flex: none; }
+.preview-detail {
+  display: flex; align-items: center; flex-wrap: wrap; gap: var(--sp-1) var(--sp-2);
+  min-width: 0;
+  font: var(--weight-regular) var(--text-small); color: var(--fg-dim);
+}
+.preview-detail-label { flex: none; font-weight: var(--weight-medium); color: var(--fg-dim); }
+.preview-legend { display: inline-flex; align-items: center; gap: 10px; flex: none; }
+.preview-legend-item { display: inline-flex; align-items: center; gap: var(--sp-1); }
+.preview-legend-dot { width: 8px; height: 8px; border-radius: var(--radius-bar); flex: none; }
+.preview-legend-dot--busy { background: var(--busy); }
+.preview-legend-dot--waiting { background: var(--attention-glyph); }
+.preview-detail-text { margin-left: auto; white-space: nowrap; }
+
+/* ---------------------------------------------------------------- preview (§4.6) */
+
+/* A flat pane: no card, margin, border, shadow, or colored top bar. The
+   agent color shows in the title-row badge instead. */
+.preview {
+  display: flex; flex-direction: column;
+  min-width: 0; min-height: 0;
+  background: var(--bg-pane);
+  overflow: hidden;
+  position: relative;
+  container-type: inline-size;
+}
+.zoom { display: flex; flex-direction: column; min-height: 0; background: var(--bg-pane); }
+.preview--zoom { flex: 1; }
+@container (max-width: 999px) {
+  .preview-spark { width: 96px; }
+}
+@container (max-width: 719px) {
+  .preview-detail-text { margin-left: 0; flex-basis: 100%; }
+}
+
+.preview-head {
+  display: flex; align-items: flex-start; gap: var(--sp-3);
+  padding: 14px var(--sp-4) var(--sp-3);
+}
+.preview-heading { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--sp-1); }
+.preview-title { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-1) var(--sp-2); min-width: 0; min-height: var(--control-h); }
+.preview-chip { width: 10px; height: 10px; }
+.preview-chip[hidden] { display: none; }
+.preview-name {
+  /* in the wrapping title row the pill and badge drop below a long name
+     (line breaks use the name's full width) before the name truncates */
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font: var(--weight-semibold) var(--text-title);
+  letter-spacing: var(--text-title-track);
+}
+.preview-meta {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font: var(--weight-regular) var(--mono-small);
+  color: var(--fg-dim);
+}
+.state-pill {
+  display: inline-flex; align-items: center; gap: var(--sp-1h);
+  flex: none;
+  height: 20px; padding: 0 var(--sp-2) 0 7px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-hover);
+  color: var(--fg-dim);
+  font: var(--weight-semibold) var(--text-small);
+  font-variant-numeric: tabular-nums;
+}
+.state-pill[hidden] { display: none; }
+.state-pill .glyph { width: 7px; height: 7px; }
+.state-pill .glyph--waiting::after { display: none; }
+.state-pill .glyph--idle { border-width: 1px; }
+.state-pill .glyph--busy { border-width: 1px; }
+.state-pill[data-state="waiting"] { background: var(--attention-soft); color: var(--attention); }
+.state-pill[data-state="busy"] { color: var(--busy); }
+.rule-chip {
+  flex: none;
+  height: 18px; padding: 0 var(--sp-1h);
+  display: inline-flex; align-items: center;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-pill);
+  font: var(--weight-regular) var(--text-caption-size)/var(--text-caption-lh) var(--font-mono);
+  color: var(--fg-dim);
+}
+.rule-chip[hidden] { display: none; }
+.preview-go { flex: none; gap: var(--sp-1h); }
+.preview-go-key { opacity: 0.7; }
+
+.preview-body {
+  flex: 1; min-height: 0;
+  display: flex;
+  margin: 0 var(--sp-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  background: var(--bg-term);
+  overflow: hidden;
+}
+.screen {
+  flex: 1; min-width: 0;
+  margin: 0;
+  padding: var(--sp-3) 14px;
+  overflow: auto;
+  /* An integer pixel line-height (16px) so stacked box-drawing glyphs
+     (╭│╰, agent permission boxes) touch edge-to-edge instead of leaving a
+     hairline gap every row from sub-pixel rounding. */
+  font: var(--weight-regular) var(--mono-screen);
+  color: var(--fg);
+  white-space: pre;
+  tab-size: 8;
+  user-select: text; -webkit-user-select: text;
+  cursor: text;
+  overscroll-behavior: contain;
+}
+.screen.is-placeholder { color: var(--fg-dim); font-style: italic; }
+.screen:focus-visible { outline: none; box-shadow: var(--ring-focus-inset); border-radius: var(--radius-m); }
+/* W-8: the single screen-search match jumped to from the palette. */
+.screen mark {
+  background: var(--attention-fill);
+  color: var(--on-attention);
+  border-radius: var(--radius-bar);
+  padding: 0 1px;
+}
+
+.title-card {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: var(--sp-2); text-align: center; padding: var(--sp-6);
+}
+.title-card-logo { width: 56px; height: 56px; margin-bottom: var(--sp-1h); }
+.title-card-name { font: var(--weight-semibold) var(--text-title); }
+.title-card-body { color: var(--fg-dim); max-width: 34ch; }
+
+.preview-foot {
+  display: flex; align-items: center; gap: var(--sp-1h);
+  height: 32px; padding: 0 var(--sp-4);
+  font: var(--weight-regular) var(--text-small);
+  color: var(--fg-dim);
+  user-select: none; -webkit-user-select: none;
+}
+.preview-foot[hidden] { display: none; }
+.live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--idle); }
+.preview.is-live .live-dot { background: var(--busy); animation: breathe 2s ease-in-out infinite; }
+.preview-foot .spacer { flex: 1; }
+.preview-hints { white-space: nowrap; }
+
+.preview-empty {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: var(--sp-1); padding: var(--sp-8); text-align: center;
+}
+.preview-empty[hidden] { display: none; }
+.preview-empty-title { font: var(--weight-regular) var(--text-body); color: var(--fg-dim); }
+.preview-empty-hint { font: var(--weight-regular) var(--text-small); color: var(--idle); }
+
+/* ---------------------------------------------------------------- list view (§4.4) */
+
+.listview { display: flex; flex-direction: column; min-height: 0; background: var(--bg-pane); }
+.listview-scroll { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.session-list--list { padding-top: var(--sp-1h); }
+/* glyph · chip · tab · agent badge · name · path · age, one line */
+.session-list--list .row {
+  grid-template-columns: 16px 8px 34px 64px minmax(160px, 1fr) minmax(0, 1.4fr) 80px;
+  grid-template-areas: "glyph chip tab badge name path age";
+  min-height: var(--row-h-list);
+}
+.session-list--list .row-main,
+.session-list--list .row-meta,
+.session-list--list .row-line2,
+.session-list--list .row-tags { display: contents; }
+.session-list--list .row > .glyph { grid-area: glyph; }
+.session-list--list .row-line1 { grid-area: name; }
+.session-list--list .row-path { grid-area: path; }
+.session-list--list .row-project { grid-area: chip; justify-self: center; padding: 0; margin: 0; width: 16px; justify-content: center; }
+.session-list--list .row-project-name { display: none; }
+.session-list--list .badge { grid-area: badge; justify-self: start; width: auto; padding: 0 var(--sp-1h) 0 5px; }
+.session-list--list .row-tab { grid-area: tab; text-align: left; min-width: 0; }
+.session-list--list .row-age { grid-area: age; justify-self: end; min-height: 0; }
+.session-list--list .row-spark { display: none; }
+.session-list--list .row.is-waiting::before { top: var(--sp-1h); bottom: var(--sp-1h); }
+
+.mini-strip {
+  flex: none;
+  margin: 0 var(--sp-3) var(--sp-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  background: var(--bg-term);
+  overflow: hidden;
+}
+.strip-head {
+  display: flex; align-items: center;
+  height: var(--control-h-sm); padding: 0 var(--sp-3);
+  font: var(--weight-medium) var(--text-small);
+  color: var(--fg-dim);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.strip-lines {
+  margin: 0;
+  padding: var(--sp-1h) var(--sp-3) var(--sp-2);
+  min-height: calc(3 * var(--mono-tail-lh) + 14px);
+  font: var(--weight-regular) var(--mono-tail);
+  white-space: pre; overflow: hidden;
+  user-select: text; -webkit-user-select: text;
+}
+@media (max-height: 560px) { .mini-strip { display: none; } }
+
+/* ---------------------------------------------------------------- grid view (P-25, P-50, §4.5) */
+
+.gridview { display: flex; flex-direction: column; min-height: 0; background: var(--bg-pane); }
+.grid-head { padding: var(--sp-3) var(--sp-4) var(--sp-2); align-items: center; }
+.grid-head .pane-title { font: var(--weight-semibold) var(--text-body); color: var(--fg); }
+.grid-seg[hidden] { display: none; }
+.grid-tiles {
+  flex: 1; min-height: 0; overflow-y: auto;
+  display: grid;
+  /* Fewer, wider tiles (W-8 polish): ~3 columns at 1440px, 2 at ~1000px, 1
+     below ~700px — wide enough that a tail line of ~70-80 monospace chars
+     (and Claude's box-drawing input boxes) doesn't need to wrap. Keep this
+     in sync with `MIN_TILE_W` in grid.mjs. */
+  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+  /* `1fr` (not `auto`) so a row of tiles stretches to fill the pane's full
+     height; `minmax(280px, 1fr)` keeps a floor with many rows. */
+  grid-auto-rows: minmax(280px, 1fr);
+  gap: var(--sp-3);
+  padding: var(--sp-1) var(--sp-4) var(--sp-4);
+}
+.grid-empty { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-2); padding: var(--sp-10); text-align: center; }
+.tile {
+  display: flex; flex-direction: column;
+  min-height: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  background: var(--bg-elev);
+  overflow: hidden;
+  transition: border-color var(--dur-1) var(--ease-standard);
+}
+.tile:hover { border-color: var(--border-strong); }
+.tile.is-selected { border-color: var(--focus); box-shadow: var(--ring-tile-selected); }
+.tile.is-selected .tile-tail { color: var(--fg); }
+.tile.is-flash .tile-head { animation: flash calc(var(--flash-ms, 1500) * 1ms) var(--ease-standard); }
+.tile-head {
+  position: relative;
+  display: flex; align-items: center; gap: var(--sp-1h);
+  height: 34px; padding: 0 10px;
+  border-bottom: 1px solid var(--border);
+  flex: none;
+}
+.tile.is-waiting .tile-head { background: var(--row-waiting-bg); }
+.tile.is-waiting .tile-head::before {
+  content: "";
+  position: absolute; left: 2px; top: var(--sp-2); bottom: var(--sp-2);
+  width: 3px; border-radius: var(--radius-bar);
+  background: var(--attention-glyph);
+}
+.tile-tab { flex: none; font: var(--weight-regular) var(--mono-small); color: var(--fg-dim); }
+.tile-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: var(--weight-semibold) var(--text-control); font-family: var(--font-session); font-size: var(--session-tile-size); }
+.tile.is-shell .tile-name { font-weight: var(--weight-medium); }
+.tile-spacer { flex: 1; }
+.tile-age { flex: none; font: var(--weight-regular) var(--text-small); color: var(--idle); font-variant-numeric: tabular-nums; }
+.tile.is-waiting .tile-age { color: var(--attention); font-weight: var(--weight-semibold); }
+.tile-tail {
+  flex: 1; min-height: 0; margin: 0; padding: var(--sp-2) 10px;
+  overflow: hidden;
+  font: var(--weight-regular) var(--mono-tail);
+  color: var(--fg-dim);
+  /* `pre`, not `pre-wrap`: wrapping mid-line breaks apart Claude's
+     box-drawing input boxes. Long lines are clipped horizontally instead,
+     with a soft fade so the cut is visibly intentional. */
+  white-space: pre;
+  background: var(--bg-term);
+  -webkit-mask-image: linear-gradient(to right, black calc(100% - 22px), transparent 100%);
+  mask-image: linear-gradient(to right, black calc(100% - 22px), transparent 100%);
+}
+
+/* ---------------------------------------------------------------- compact view (W-7, §4.4) */
+
+html[data-mode="compact"] .toolbar, html[data-mode="compact"] .statusbar { display: none; }
+html[data-mode="compact"] .app { grid-template-rows: minmax(0, 1fr); }
+.compactview { display: flex; flex-direction: column; min-height: 0; overflow-y: auto; padding: var(--sp-1) var(--sp-1h); background: var(--bg-pane); }
+.compact-empty { padding: var(--sp-4); text-align: center; color: var(--fg-dim); font: var(--weight-regular) var(--text-control); }
+.compact-row {
+  position: relative;
+  display: flex; align-items: center; gap: var(--sp-2);
+  height: var(--row-h-compact);
+  padding: 0 10px;
+  border-radius: var(--radius-s);
+  cursor: default;
+}
+.compact-row:hover { background: var(--bg-hover); }
+.compact-row.is-waiting { background: var(--row-waiting-bg); }
+.compact-row.is-waiting::before {
+  content: "";
+  position: absolute; left: 2px; top: var(--sp-1h); bottom: var(--sp-1h);
+  width: 3px; border-radius: var(--radius-bar);
+  background: var(--attention-glyph);
+}
+.compact-row.is-waiting .compact-name { font-weight: var(--weight-semibold); }
+.compact-row.is-waiting .compact-age { color: var(--attention); font-weight: var(--weight-semibold); }
+.compact-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: var(--weight-medium) var(--text-control); font-family: var(--font-session); font-size: var(--session-tile-size); }
+.compact-row.is-shell .compact-name { font-weight: var(--weight-regular); }
+.compact-age { flex: none; font: var(--weight-regular) var(--text-small); color: var(--idle); white-space: nowrap; font-variant-numeric: tabular-nums; }
+/* Dot only (no project-name text) — the 320px floating panel has no room
+   for a full chip; the color and its meaning are still in the tooltip. */
+.compact-dot { width: 8px; height: 8px; }
+
+/* ---------------------------------------------------------------- projects panel (P-41, P-61–P-65, §4.7) */
+
+/* The panel is a vertical accordion (v0.2.2): expanded is `--sidebar-w`
+   wide (`.proj-body`, the header + slot list below); collapsed is
+   `--rail-w` (`.proj-rail`, a slim always-there rail — never fully gone,
+   unlike the old toggle-button-hidden panel). Only the width transitions
+   (§3.6 `--dur-3`); the two children swap with a plain `display` flip
+   (`.is-collapsed` below) rather than their own animation, so there's
+   nothing to fade or clip mid-resize. */
+.proj-panel {
+  position: absolute; top: var(--toolbar-h); bottom: var(--footer-h); left: 0;
+  width: var(--sidebar-w);
+  overflow: hidden;
+  background: var(--bg-chrome);
+  border-right: 1px solid var(--border);
+  z-index: 10;
+  transition: width var(--dur-3) var(--ease-out);
+}
+.proj-panel.is-collapsed { width: var(--rail-w); }
+.proj-body { display: flex; flex-direction: column; width: 100%; height: 100%; padding: 0 0 var(--sp-2); }
+.proj-panel.is-collapsed .proj-body { display: none; }
+.proj-rail { display: none; }
+.proj-panel.is-collapsed .proj-rail { display: flex; }
+.proj-head { display: flex; align-items: center; justify-content: space-between; height: 28px; padding: 0 var(--sp-2) 0 var(--sp-3); margin-top: var(--sp-1h); }
+.proj-head h3 { font: var(--weight-semibold) var(--text-small); color: var(--fg-dim); }
+.proj-head-actions { display: flex; align-items: center; gap: var(--sp-1); }
+.proj-clear-all {
+  height: 20px; padding: 0 var(--sp-1h);
+  border: 0; border-radius: var(--radius-xs);
+  background: transparent;
+  color: var(--fg-dim);
+  font: var(--weight-medium) var(--text-small);
+}
+.proj-clear-all:hover { color: var(--fg); background: var(--bg-hover); }
+.proj-collapse { width: var(--control-h-sm); height: var(--control-h-sm); }
+.proj-list { display: flex; flex-direction: column; gap: 1px; flex: 1; min-height: 0; overflow-y: auto; }
+.proj-slot {
+  display: flex; align-items: center; gap: var(--sp-2);
+  height: 28px; padding: 0 var(--sp-2);
+  margin: 0 var(--sp-1);
+  border-radius: var(--radius-s);
+}
+.proj-slot:hover { background: var(--bg-hover); }
+.proj-slot:focus-visible { outline: none; background: var(--bg-hover); box-shadow: var(--focus-ring); }
+.proj-slot.is-dragover { background: var(--bg-selected); box-shadow: var(--ring-drop); }
+.proj-dot { width: 10px; height: 10px; border-radius: 50%; flex: none; box-shadow: var(--ring-chip); }
+.proj-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: var(--weight-regular) var(--text-body); color: var(--fg); }
+.proj-slot:not(.is-named) .proj-name { color: var(--fg-dim); }
+.proj-input {
+  flex: 1; min-width: 0; height: 22px; padding: 0 var(--sp-1h);
+  border: 1px solid var(--focus); border-radius: var(--radius-xs);
+  background: var(--bg-pane); color: var(--fg); font: var(--weight-regular) var(--text-body);
+  box-shadow: var(--focus-ring);
+}
+.proj-input:focus-visible { outline: none; }
+.proj-input::placeholder { color: var(--idle); }
+/* Slot number stays visible alongside its color. */
+.proj-num { flex: none; min-width: 1ch; font: var(--weight-semibold) var(--text-small); color: var(--fg-dim); font-variant-numeric: tabular-nums; }
+/* Edit/clear affordances (P-61): the pencil is always on for unnamed slots
+   (nothing else marks them as actionable), otherwise on hover/focus. The
+   × is a real focusable button, only for named slots. */
+.proj-edit-icon { flex: none; display: grid; place-items: center; width: 16px; height: 16px; opacity: 0; color: var(--fg-dim); transition: opacity var(--dur-1) var(--ease-out); }
+.proj-slot:not(.is-named) .proj-edit-icon,
+.proj-slot:hover .proj-edit-icon,
+.proj-slot:focus .proj-edit-icon,
+.proj-slot:focus-within .proj-edit-icon { opacity: 1; }
+.proj-clear {
+  display: grid; place-items: center; flex: none;
+  width: 16px; height: 16px;
+  border: 0; border-radius: var(--radius-xs);
+  background: transparent;
+  color: var(--fg-dim);
+  opacity: 0;
+  transition: opacity var(--dur-1) var(--ease-out), background-color var(--dur-1), color var(--dur-1);
+}
+.proj-clear:hover { background: color-mix(in srgb, var(--fg) 8%, transparent); color: var(--fg); }
+.proj-slot.is-named:hover .proj-clear,
+.proj-slot.is-named:focus .proj-clear,
+.proj-slot.is-named:focus-within .proj-clear { opacity: 1; }
+
+/* Collapsed rail: a single button spanning the panel, a rotated "Projects"
+   label over the 5 dots. It's a real <button> (native Enter/Space
+   activates it), quiet at rest like the rest of §4.7. */
+.proj-rail {
+  flex-direction: column; align-items: center;
+  width: 100%; height: 100%;
+  padding: var(--sp-2) 0;
+  border: 0;
+  background: transparent;
+  color: var(--fg-dim);
+  transition: background-color var(--dur-1) var(--ease-standard), color var(--dur-1) var(--ease-standard);
+}
+.proj-rail:hover { background: var(--bg-hover); color: var(--fg); }
+.proj-rail:focus-visible { outline: none; box-shadow: var(--ring-focus-inset); }
+.proj-rail-label {
+  flex: 1; min-height: 0;
+  display: flex; align-items: flex-start; justify-content: center;
+  padding-top: var(--sp-1);
+  writing-mode: vertical-rl; transform: rotate(180deg);
+  font: var(--weight-semibold) var(--text-small);
+  letter-spacing: .04em;
+}
+.proj-rail-dots { display: flex; flex-direction: column; align-items: center; gap: var(--sp-1h); flex: none; padding-bottom: var(--sp-1); }
+.proj-rail-dot { display: grid; place-items: center; width: 18px; height: 18px; border: 2px solid currentColor; border-radius: 50%; flex: none; background: var(--bg-pane); color: var(--fg); font: var(--weight-semibold) var(--text-small); font-variant-numeric: tabular-nums; }
+.proj-rail-dot.tab-dot--red { border-color: var(--tab-red); }
+.proj-rail-dot.tab-dot--orange { border-color: var(--tab-orange); }
+.proj-rail-dot.tab-dot--yellow { border-color: var(--tab-yellow); }
+.proj-rail-dot.tab-dot--green { border-color: var(--tab-green); }
+.proj-rail-dot.tab-dot--blue { border-color: var(--tab-blue); }
+.proj-rail-dot.tab-dot--purple { border-color: var(--tab-purple); }
+.proj-rail-dot.tab-dot--gray { border-color: var(--tab-gray); }
+.proj-rail-dot.is-dragover { box-shadow: var(--ring-drop); }
+
+/* ---------------------------------------------------------------- responsive (§6) */
+
+@media (max-width: 899px) {
+  /* P-23's narrow breakpoint: too tight to reflow the *expanded* panel
+     around the session list, so that state overlays the content instead;
+     the collapsed rail is slim enough to keep reflowing (it stays docked,
+     never overlaid). */
+  .app.projects-open .content { margin-left: 0; }
+  .proj-panel:not(.is-collapsed) { box-shadow: var(--shadow-2); }
+  /* list view: compact (glyph-only) badges */
+  .session-list--list .row { grid-template-columns: 16px 8px 34px 18px minmax(140px, 1fr) minmax(0, 1.2fr) 72px; }
+  .session-list--list .badge { width: 18px; padding: 0; justify-content: center; }
+  .session-list--list .badge-text { display: none; }
+}
+@media (max-width: 759px) {
+  /* drop the path column: at this width it only shows useless tails */
+  .session-list--list .row { grid-template-columns: 16px 8px 34px 18px minmax(0, 1fr) 72px; grid-template-areas: "glyph chip tab badge name age"; }
+  .session-list--list .row-path { display: none; }
+}
+@media (max-width: 539px) {
+  .proj-panel { width: min(var(--sidebar-w), 80vw); }
+}
+
+/* ---------------------------------------------------------------- motion (P-34) */
+
+@media (prefers-reduced-motion: reduce) {
+  .row.is-flash, .tile.is-flash .tile-head { animation: none !important; background: var(--attention-soft); }
+  .glyph--waiting::after { display: none; }
+}

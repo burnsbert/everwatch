@@ -1,0 +1,275 @@
+/* Everwatch UI: page shell (Usage, Settings, Diagnostics), empty and stub
+ * pages, usage page and burn-down chart (docs/design/VISUAL_SPEC.md §4.14,
+ * §4.15 empty states, §4.16). Every value comes from tokens.css. */
+
+/* ---------------------------------------------------------------- page shell (§4.16) */
+
+/* One centred column; the title row sits inside it, so the title, the back
+   button, and the content share a left edge (fixes A12). */
+.page {
+  overflow: auto;
+  padding: var(--sp-6) var(--sp-8) var(--sp-10);
+  background: var(--bg);
+}
+.page--settings { --page-w: 640px; }
+.page--diagnostics { --page-w: 720px; }
+.page--usage { --page-w: 960px; }
+.page-col { max-width: var(--page-w); margin: 0 auto; }
+/* `‹ Sessions`: pulled left by its own padding so the chevron lines up with
+   the title's left edge instead of the button's hover box. */
+.page-back { gap: var(--sp-0h); margin-left: calc(var(--sp-2) * -1); padding: 0 var(--sp-2) 0 var(--sp-1); }
+.page-head {
+  display: flex; align-items: flex-end; justify-content: space-between; gap: var(--sp-4);
+  margin: var(--sp-1) 0 var(--sp-5);
+}
+.page-titles { min-width: 0; }
+.page-title {
+  font: var(--weight-semibold) var(--text-page);
+  letter-spacing: var(--text-page-track);
+}
+.page-actions { display: flex; gap: var(--sp-2); flex: none; }
+
+/* ---------------------------------------------------------------- empty & stub pages (§4.15) */
+
+.empty-page, .stub-page {
+  display: grid; place-items: center;
+  padding: var(--sp-8);
+  overflow: auto;
+  background: var(--bg);
+}
+.empty-card {
+  display: flex; flex-direction: column; align-items: center;
+  gap: var(--sp-2);
+  max-width: 440px;
+  text-align: center;
+  animation: rise var(--dur-3) var(--ease-out);
+}
+/* A quiet 56px circle; error kinds tint only the icon. */
+.empty-art {
+  display: grid; place-items: center;
+  width: 56px; height: 56px;
+  margin-bottom: var(--sp-2);
+  border-radius: 50%;
+  background: var(--bg-hover);
+  color: var(--fg-dim);
+}
+.empty-page[data-kind="not_running"] .empty-art,
+.empty-page[data-kind="error"] .empty-art { color: var(--warn); }
+.empty-page[data-kind="no_backend"] .empty-art { color: var(--danger); }
+.empty-icon { width: 32px; height: 32px; color: inherit; }
+.stub-page .empty-icon { color: var(--fg-dim); }
+.empty-title {
+  font: var(--weight-semibold) var(--text-title);
+  letter-spacing: var(--text-title-track);
+}
+.empty-body { max-width: 40ch; color: var(--fg-dim); font: var(--weight-regular) var(--text-body); }
+.empty-body code {
+  padding: 0 var(--sp-1);
+  border-radius: var(--radius-xs);
+  background: var(--bg-term);
+  color: var(--fg);
+  font: var(--weight-regular) var(--mono-small);
+}
+/* Connecting kinds: a small busy-style spinner under the title instead of
+   breathing the icon. Reduced motion freezes it as a static arc. */
+.empty-spinner {
+  width: 16px; height: 16px;
+  border: 1.5px solid color-mix(in srgb, var(--fg-dim) 30%, transparent);
+  border-top-color: var(--fg-dim);
+  border-radius: 50%;
+  animation: empty-spin 0.9s linear infinite;
+}
+@keyframes empty-spin { to { transform: rotate(360deg); } }
+.empty-detail {
+  max-width: 100%;
+  margin: var(--sp-0h) 0 0;
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--radius-m);
+  background: var(--bg-term);
+  border: 1px solid var(--border);
+  font: var(--weight-regular) var(--mono-small);
+  color: var(--fg-dim);
+  white-space: pre-wrap; text-align: left;
+}
+/* A plain numbered list, no box. */
+.empty-steps {
+  margin: var(--sp-1) 0 0;
+  padding: 0 0 0 var(--sp-5);
+  text-align: left;
+  color: var(--fg);
+  font: var(--weight-regular) var(--text-body);
+  line-height: 22px;
+}
+.empty-actions {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-2);
+}
+/* The in-list "No matching sessions" / grid variants: no circle, a 16px
+   icon, a 13/600 title. */
+.empty-icon--small { width: 16px; height: 16px; stroke-width: 1.5; color: var(--fg-dim); }
+.list-empty .empty-title, .grid-empty .empty-title { font: var(--weight-semibold) var(--text-body); letter-spacing: 0; }
+
+@keyframes rise { from { opacity: 0; transform: translateY(4px); } }
+
+/* ---------------------------------------------------------------- usage page (§4.14) */
+
+/* One column below ~820px of content width (fixes A19). */
+.usage-sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(380px, 100%), 1fr));
+  gap: var(--sp-4);
+  align-items: start;
+}
+.usage-section {
+  padding: var(--sp-4) var(--sp-5);
+  border-radius: var(--radius-l);
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+}
+.usage-head {
+  display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+}
+.usage-head h3 {
+  display: inline-flex; align-items: center; gap: var(--sp-1h);
+  font: var(--weight-semibold) var(--text-body);
+  color: var(--fg);
+  white-space: nowrap;
+}
+.usage-glyph { align-self: center; }
+.usage-glyph--claude { color: var(--agent-claude); }
+.usage-glyph--codex { color: var(--agent-codex); }
+.usage-status { font: var(--weight-regular) var(--text-small); color: var(--fg-dim); text-align: right; font-variant-numeric: tabular-nums; }
+.usage-status.is-error { color: var(--danger); font-weight: var(--weight-medium); }
+.meters { display: flex; flex-direction: column; }
+.meter { --chart-color: var(--fg-dim); }
+.meter[data-level="yellow"] { --chart-color: var(--warn-fill); }
+.meter[data-level="red"], .meter.is-hit { --chart-color: var(--danger); }
+.meter + .meter { margin-top: var(--sp-4); padding-top: var(--sp-4); border-top: 1px solid var(--border); }
+.meter-top { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2); }
+.meter-label { font: var(--weight-medium) var(--text-body); }
+.meter.is-hit .meter-label { font-weight: var(--weight-semibold); }
+.meter-nums { display: inline-flex; align-items: center; gap: var(--sp-2); }
+.meter-dollars { font: var(--weight-regular) var(--text-small); color: var(--fg-dim); font-variant-numeric: tabular-nums; }
+.meter-pct {
+  font: var(--weight-semibold) var(--text-metric);
+  letter-spacing: var(--text-metric-track);
+  font-variant-numeric: tabular-nums;
+  color: var(--fg);
+}
+.meter[data-level="yellow"] .meter-pct { color: var(--warn); }
+.meter[data-level="red"] .meter-pct, .meter.is-hit .meter-pct { color: var(--danger); }
+/* §4.18.2 state icons: pace (hourglass) is a different kind of mark than
+   severity (colour), so a calm bar that's on pace to run out still shows. */
+.meter-icon { display: none; }
+.meter-icon.is-shown { display: block; }
+.meter-icon--pace { color: var(--warn-fill); }
+.meter-icon--hit { color: var(--danger); }
+/* Calm isn't green: ok fills --fg-dim, yellow --warn-fill, red --danger. */
+.meter-bar {
+  height: 6px;
+  margin: var(--sp-2) 0 var(--sp-1h);
+  border-radius: var(--radius-pill);
+  background: var(--meter-track);
+  box-shadow: var(--meter-track-ring);
+  overflow: hidden;
+}
+.meter-fill {
+  display: block; height: 100%; width: var(--pct, 0%);
+  border-radius: var(--radius-pill);
+  background: var(--chart-color);
+  transition: width var(--dur-3) var(--ease-out);
+}
+.meter-bottom { display: flex; }
+.meter-reset { font: var(--weight-regular) var(--text-small); color: var(--fg-dim); font-variant-numeric: tabular-nums; }
+.meter-proj { margin-top: var(--sp-0h); font: var(--weight-regular) var(--text-small); color: var(--warn); }
+.meter-proj.is-hit { color: var(--danger); font-weight: var(--weight-medium); }
+.usage-empty { margin-top: var(--sp-8); text-align: center; color: var(--fg-dim); }
+.usage-foot { display: flex; align-items: center; justify-content: flex-end; gap: var(--sp-3); margin-top: var(--sp-4); }
+
+/* burn-down chart (W-6, §4.14): hand-written SVG over the limit's own
+   window — left edge = window start, right edge = reset. Dots, tags, and
+   the "Now" rule are HTML laid over the plot in % so the stretched SVG
+   never distorts them. Gridlines at 50/100 only; no vertical grid, no
+   shaded future. */
+.meter-chart { position: relative; margin-top: var(--sp-3); padding-top: var(--sp-4); }
+.chart-body { display: flex; align-items: stretch; gap: var(--sp-2); }
+.chart-yaxis { position: relative; flex: none; width: 30px; }
+.chart-ytick {
+  position: absolute; left: 0; right: 0; transform: translateY(-50%);
+  font: var(--weight-regular) var(--text-caption); color: var(--idle); font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.chart-plot { position: relative; flex: 1; min-width: 0; }
+.meter-chart-svg { display: block; width: 100%; height: 96px; overflow: visible; }
+.chart-grid { fill: var(--border); }
+.chart-base { fill: var(--border-strong); }
+.meter-chart-svg [hidden] { display: none; }
+.chart-grad-stop1 { stop-color: var(--chart-color); stop-opacity: 0.16; }
+.chart-grad-stop2 { stop-color: var(--chart-color); stop-opacity: 0; }
+.chart-line {
+  stroke: var(--chart-color); stroke-width: 1.5;
+  stroke-linejoin: round; stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+.meter .chart-line--proj { stroke: var(--fg-dim); stroke-width: 1.25; stroke-dasharray: 3 3; opacity: 0.7; }
+.chart-reset { fill: var(--border-strong); }
+.chart-now {
+  position: absolute; top: 6.25%; bottom: 6.25%;
+  border-left: 1px dashed var(--fg-dim);
+  opacity: 0.5;
+}
+.chart-hover-rect { cursor: crosshair; }
+.chart-dots { position: absolute; inset: 0; pointer-events: none; }
+.chart-dot {
+  position: absolute; width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px;
+  border-radius: 50%;
+  background: var(--chart-color);
+  outline: 2px solid var(--bg-elev);
+}
+/* the run-out point: hollow, in the pace colour */
+.chart-dot--hit { background: var(--bg-elev); border: 1.5px solid var(--warn-fill); }
+.chart-dot--hover { background: var(--fg); }
+.chart-annot { position: absolute; left: 0; right: 0; bottom: 100%; height: 16px; pointer-events: none; }
+.chart-tag {
+  position: absolute; bottom: var(--sp-0h); transform: translateX(-50%);
+  display: inline-flex; align-items: center; gap: var(--sp-0h);
+  font: var(--weight-medium) var(--text-caption);
+  white-space: nowrap; font-variant-numeric: tabular-nums;
+  color: var(--fg-dim);
+}
+.chart-tag[data-align="start"] { transform: translateX(0); }
+.chart-tag[data-align="end"] { transform: translateX(-100%); }
+.chart-tag--hit[data-align="start"] { transform: translateX(6px); }
+.chart-tag--hit[data-align="end"] { transform: translateX(calc(-100% - 6px)); }
+.chart-tag--hit { color: var(--warn); }
+.chart-tag--hit .icon { color: var(--warn-fill); }
+.chart-xaxis { position: relative; height: 14px; margin: var(--sp-1) 0 0 38px; }
+.chart-xtick {
+  position: absolute; top: 0; transform: translateX(-50%);
+  font: var(--weight-regular) var(--text-caption); color: var(--idle);
+  white-space: nowrap; font-variant-numeric: tabular-nums;
+}
+.chart-xtick--start { left: 0; transform: none; }
+.chart-xtick--reset { color: var(--fg-dim); }
+.chart-xtick.at-end { transform: translateX(-100%); }
+.chart-empty {
+  margin: 0; padding: var(--sp-5) var(--sp-2);
+  text-align: center; font: var(--weight-regular) var(--text-small); color: var(--fg-dim);
+  border: 1px dashed var(--border-strong); border-radius: var(--radius-m);
+}
+.chart-tip {
+  position: absolute; top: calc(var(--sp-1h) * -1); transform: translate(-50%, -100%);
+  padding: var(--sp-0h) var(--sp-1h);
+  border-radius: var(--radius-xs);
+  background: var(--bg-popover);
+  border: 1px solid var(--border-strong);
+  color: var(--fg);
+  font: var(--weight-medium) var(--text-caption);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: var(--shadow-2);
+  z-index: 1;
+}

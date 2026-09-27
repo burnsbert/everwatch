@@ -1,0 +1,286 @@
+/* Settings, Settings → Diagnostics, and the first-run onboarding wizard
+ * (docs/DESIGN.md §4.2, WP7; presentation docs/design/VISUAL_SPEC.md §4.15).
+ * The page shell (.page, .page-col, .page-head) lives in pages.css. Every
+ * value comes from tokens.css. */
+
+/* ---------------------------------------------------------------- settings groups */
+
+/* System Settings grouping: the section title sits outside one group per
+   section; rows inside it are divided by hairlines inset 12px from the left. */
+.settings-section + .settings-section { margin-top: var(--sp-6); }
+.settings-h3 {
+  margin: 0 0 var(--sp-2) var(--sp-1);
+  font: var(--weight-semibold) var(--text-body);
+  color: var(--fg);
+}
+.settings-group {
+  border-radius: var(--radius-m);
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+}
+.settings-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--sp-3);
+  min-height: 40px;
+  padding: var(--sp-2) var(--sp-3);
+}
+/* The inset separator: every visible row after the first visible one gets
+   a top hairline that starts 12px in (its left padding becomes margin, so
+   the content doesn't move). */
+.settings-group > :not([hidden]) ~ :not([hidden]) {
+  margin-left: var(--sp-3);
+  padding-left: 0;
+  border-top: 1px solid var(--border);
+}
+.settings-row-text { display: flex; flex-direction: column; gap: var(--sp-0h); min-width: 0; }
+.settings-row-label { font: var(--weight-regular) var(--text-body); }
+.settings-row-desc { font: var(--weight-regular) var(--text-small); color: var(--fg-dim); }
+.settings-row-control { display: flex; align-items: center; gap: var(--sp-2); flex: none; }
+.settings-select { min-width: 112px; height: var(--control-h); padding: 0 var(--sp-2); border: 1px solid var(--border-strong); border-radius: var(--radius-s); background: var(--bg-pane); color: var(--fg); font: var(--weight-regular) var(--text-control); }
+.settings-select:focus-visible { outline: none; border-color: var(--focus); box-shadow: var(--focus-ring); }
+.settings-row-action { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2); }
+/* follow-on rows (status notes, link rows) that belong to the row above */
+.settings-row--sub { min-height: 0; }
+.settings-note { margin: 0; }
+.settings-code, .settings-row-desc code, .ob-card-body code, .check-detail code {
+  padding: 0 var(--sp-1);
+  border-radius: var(--radius-xs);
+  background: var(--bg-term);
+  color: var(--fg);
+  font: var(--weight-regular) var(--mono-small);
+  overflow-wrap: anywhere;
+}
+
+/* ---------------------------------------------------------------- toggle switch */
+.settings-row--toggle { cursor: default; }
+.toggle-input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.toggle { position: relative; flex: none; }
+.toggle-track {
+  display: block;
+  width: 34px;
+  height: 20px;
+  border-radius: var(--radius-pill);
+  background: var(--border-strong);
+  transition: background-color var(--dur-1) var(--ease-standard);
+}
+/* §4.8: a white knob in both themes (the allowed `#fff` exception). */
+.toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: var(--shadow-1);
+  transition: transform var(--dur-1) var(--ease-standard);
+}
+.toggle-input:checked + .toggle-track { background: var(--accent); }
+.toggle-input:checked + .toggle-track .toggle-thumb { transform: translateX(14px); }
+.toggle-input:focus-visible + .toggle-track { box-shadow: var(--focus-ring); }
+
+/* ---------------------------------------------------------------- hotkey recorder (§4.15) */
+/* One 24px field: the shortcut in mono (or "Record Shortcut" in --idle),
+   click to record (focus border while recording), inline × to clear. */
+.hotkey-field {
+  display: inline-flex; align-items: center;
+  height: var(--control-h-sm); min-width: 96px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-s);
+  background: var(--bg-pane);
+  transition: border-color var(--dur-1) var(--ease-standard);
+}
+.hotkey-field:hover { border-color: color-mix(in srgb, var(--fg) 25%, var(--border-strong)); }
+.hotkey-field.is-recording { border-color: var(--focus); box-shadow: var(--focus-ring); }
+.hotkey-record {
+  flex: 1; height: 100%;
+  padding: 0 var(--sp-2);
+  border: 0; border-radius: var(--radius-s);
+  background: transparent;
+  color: var(--fg);
+  font: var(--weight-regular) var(--mono-screen);
+  text-align: center;
+  white-space: nowrap;
+}
+.hotkey-record:focus-visible { outline: none; }
+.hotkey-field:has(.hotkey-record:focus-visible) { border-color: var(--focus); box-shadow: var(--focus-ring); }
+.hotkey-field.is-empty .hotkey-record, .hotkey-field.is-recording .hotkey-record { color: var(--idle); font: var(--weight-regular) var(--text-control); }
+.hotkey-clear {
+  display: grid; place-items: center;
+  width: 18px; height: 18px; margin-right: var(--sp-0h);
+  border: 0; border-radius: var(--radius-xs);
+  background: transparent;
+  color: var(--fg-dim);
+}
+.hotkey-clear:hover { background: var(--bg-hover); color: var(--fg); }
+.hotkey-status:empty { display: none; }
+.hotkey-status { color: var(--warn); }
+
+/* ---------------------------------------------------------------- about */
+.about-version, .about-shell-version { font-variant-numeric: tabular-nums; }
+.about-links { justify-content: flex-start; }
+
+/* ---------------------------------------------------------------- diagnostics list (§4.15) */
+/* One grouped list, Settings row anatomy: status icon · title + detail ·
+   action. Below 640px the action wraps under the detail. */
+.diag-summary {
+  display: flex; align-items: center; gap: var(--sp-1h);
+  margin-top: var(--sp-1);
+  font: var(--weight-regular) var(--text-control);
+  color: var(--fg-dim);
+}
+.diag-summary-icon:empty { display: none; }
+.diag-summary-icon { display: inline-grid; }
+.diag-summary[data-status="ok"] .diag-summary-icon { color: var(--busy); }
+.diag-summary[data-status="warn"] .diag-summary-icon { color: var(--warn); }
+.diag-summary[data-status="error"] .diag-summary-icon { color: var(--danger); }
+.check-list:empty { display: none; }
+.check-row {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) auto;
+  align-items: start;
+  column-gap: var(--sp-3);
+  padding: var(--sp-3);
+}
+.check-icon { display: grid; place-items: center; height: var(--text-body-lh); color: var(--idle); }
+.check-row[data-status="ok"] .check-icon { color: var(--busy); }
+.check-row[data-status="warn"] .check-icon { color: var(--warn); }
+.check-row[data-status="error"] .check-icon { color: var(--danger); }
+.check-row[data-status="info"] .check-icon { color: var(--fg-dim); }
+.check-text { min-width: 0; }
+.check-head { display: flex; align-items: baseline; gap: var(--sp-2); }
+.check-title { font: var(--weight-medium) var(--text-body); }
+.check-detail { margin-top: var(--sp-0h); font: var(--weight-regular) var(--text-control); color: var(--fg-dim); }
+.check-actions { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.check-actions:empty { display: none; }
+@media (max-width: 639px) {
+  .check-row { grid-template-columns: 16px minmax(0, 1fr); }
+  .check-actions { grid-column: 2; margin-top: var(--sp-2); }
+}
+
+/* ---------------------------------------------------------------- onboarding (§4.15) */
+
+/* First run hides the whole main-window chrome (toolbar + status bar), the
+   same way compact mode does; the canvas is --bg. */
+.app[data-view="onboarding"] { grid-template-rows: minmax(0, 1fr); }
+.app[data-view="onboarding"] > .toolbar,
+.app[data-view="onboarding"] > .statusbar { display: none; }
+
+/* margin:auto (not align-items:center) centres the card without clipping
+   its top on short windows. The card itself never outgrows the window:
+   header / scrolling body / footer, so the footer can't cover content. */
+.onboarding-page {
+  display: flex;
+  padding: var(--sp-8) var(--sp-6);
+  overflow: auto;
+  background: var(--bg);
+}
+.ob-wrap {
+  display: flex; flex-direction: column;
+  width: min(520px, 100%);
+  max-height: calc(100vh - 64px);
+  margin: auto;
+  border-radius: var(--radius-l);
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-1);
+  overflow: hidden;
+}
+.ob-head { flex: none; padding: var(--sp-4) var(--sp-5) 0; }
+.ob-progress-text { font: var(--weight-semibold) var(--text-small); color: var(--fg-dim); }
+.ob-progress { display: flex; gap: var(--sp-1); margin-top: var(--sp-2); }
+.ob-seg { flex: 1; height: 4px; border-radius: var(--radius-bar); background: var(--border-strong); }
+.ob-seg.is-done, .ob-seg.is-active { background: var(--accent); }
+.ob-body-wrap { flex: 1 1 auto; min-height: 0; overflow: auto; padding: var(--sp-6) var(--sp-8); }
+.ob-step:focus-visible { outline: none; }
+.ob-step h2:focus-visible { outline: none; }
+.ob-logo { display: block; width: 56px; height: 56px; margin: 0 auto var(--sp-3); }
+.ob-hero {
+  display: grid; place-items: center;
+  width: 48px; height: 48px;
+  margin: 0 auto var(--sp-3);
+  border-radius: var(--radius-l);
+  background: var(--bg-hover);
+  color: var(--accent-fg);
+}
+.ob-title {
+  margin-bottom: var(--sp-2);
+  font: var(--weight-semibold) var(--text-page);
+  letter-spacing: var(--text-page-track);
+  text-align: center;
+}
+.ob-body { max-width: 44ch; margin: 0 auto var(--sp-3); font: var(--weight-regular) var(--text-body); color: var(--fg-dim); text-align: center; }
+/* Callout: a neutral block with a 3px waiting-amber bar, not orange text. */
+.ob-callout {
+  margin-bottom: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--radius-m);
+  background: var(--bg-hover);
+  border-left: 3px solid var(--attention-glyph);
+}
+.ob-callout-title { font: var(--weight-semibold) var(--text-body); color: var(--fg); }
+.ob-callout-body { margin-top: var(--sp-0h); font: var(--weight-regular) var(--text-control); color: var(--fg-dim); }
+.ob-callout-body strong { color: var(--fg); font-weight: var(--weight-semibold); }
+.ob-demo-box { display: flex; align-items: center; justify-content: center; gap: var(--sp-2); margin-top: var(--sp-2); }
+.ob-cards { display: flex; flex-direction: column; gap: var(--sp-2); }
+/* status blocks: icon · title + body (+ the check's own action) */
+.ob-card {
+  display: grid; grid-template-columns: 16px minmax(0, 1fr); column-gap: var(--sp-3);
+  padding: var(--sp-3);
+  border-radius: var(--radius-m);
+  border: 1px solid var(--border);
+  background: var(--bg-pane);
+}
+.ob-card-action { grid-column: 2; margin-top: var(--sp-2); }
+.ob-status-icon { display: grid; place-items: center; height: var(--text-body-lh); color: var(--idle); }
+[data-kind="ok"] > .ob-status-icon, [data-status="ok"] > .ob-status-icon { color: var(--busy); }
+[data-kind="warn"] > .ob-status-icon, [data-status="warn"] > .ob-status-icon { color: var(--warn); }
+[data-kind="error"] > .ob-status-icon, [data-status="error"] > .ob-status-icon { color: var(--danger); }
+[data-kind="info"] > .ob-status-icon, [data-status="info"] > .ob-status-icon { color: var(--fg-dim); }
+.ob-card-title { margin: 0; font: var(--weight-semibold) var(--text-body); }
+.ob-card-body { margin-top: var(--sp-0h); font: var(--weight-regular) var(--text-control); color: var(--fg-dim); }
+.ob-step > .ob-card { margin-bottom: var(--sp-3); }
+/* Extras: a grouped list (Settings row anatomy) with status icons */
+.ob-extras .ob-extra { display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; align-items: start; column-gap: var(--sp-3); padding: var(--sp-3); }
+.ob-extras .ob-extra .settings-row-action:empty { display: none; }
+.ob-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--sp-2); margin: var(--sp-4) 0; }
+.ob-note { margin-top: var(--sp-2); font: var(--weight-regular) var(--text-small); color: var(--fg-dim); text-align: center; }
+.ob-guide { margin-top: var(--sp-1); }
+.ob-guide-title { margin-bottom: var(--sp-1h); font: var(--weight-semibold) var(--text-control); color: var(--fg-dim); }
+.ob-stuck { margin-top: var(--sp-4); padding-top: var(--sp-3); border-top: 1px solid var(--border); font: var(--weight-regular) var(--text-control); }
+.ob-stuck summary { cursor: default; color: var(--fg-dim); }
+.ob-stuck summary:hover { color: var(--fg); }
+.ob-stuck-body { margin: var(--sp-2) 0 0; color: var(--fg-dim); }
+.ob-stuck-cmd { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2); margin-top: var(--sp-2); }
+
+/* Automation-switch illustration (views/automation_illo.mjs): a miniature
+ * System Settings list, colored only from tokens so it follows the theme. */
+.ob-illo { display: block; width: 100%; max-width: 400px; height: auto; margin: var(--sp-3) auto 0; }
+.ob-illo text { font-family: var(--font-ui); }
+.ob-illo-panel { fill: var(--bg-pane); stroke: var(--border-strong); }
+.ob-illo-crumb { font-size: var(--text-small-size); fill: var(--fg-dim); }
+.ob-illo-title { font-size: var(--text-title-size); font-weight: var(--weight-semibold); fill: var(--fg); }
+.ob-illo-group { fill: var(--bg-elev); stroke: var(--border); }
+.ob-illo-app { font-size: var(--text-body-size); font-weight: var(--weight-semibold); fill: var(--fg); }
+.ob-illo-target { font-size: var(--text-body-size); fill: var(--fg); }
+.ob-illo-divider { fill: var(--border); }
+.ob-illo-iterm { fill: var(--bg-term); stroke: var(--border-strong); }
+.ob-illo-iterm-glyph { fill: none; stroke: var(--busy); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.ob-illo-track { fill: var(--accent); }
+.ob-illo-thumb { fill: #fff; }
+.ob-illo-ring { fill: none; stroke: var(--attention-glyph); stroke-width: 2; animation: ob-illo-pulse 2.4s ease-in-out infinite; }
+.ob-illo-hint { font-size: var(--text-small-size); font-weight: var(--weight-semibold); fill: var(--attention); }
+.ob-illo-arrow { fill: none; stroke: var(--attention-glyph); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+@keyframes ob-illo-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+.ob-tips { list-style: none; display: flex; flex-direction: column; gap: var(--sp-2); max-width: 40ch; margin: var(--sp-2) auto 0; padding: 0; }
+.ob-tips li { display: flex; align-items: center; gap: var(--sp-2); font: var(--weight-regular) var(--text-body); }
+/* keycaps: the one base.css `kbd` style (§4.12) */
+/* Footer inside the card: Back (plain) left; Continue (primary), or the
+   plain Skip for Now, right. */
+.ob-nav {
+  flex: none;
+  display: flex; align-items: center; gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-4);
+  border-top: 1px solid var(--border);
+}
+.ob-nav-spacer { flex: 1; }

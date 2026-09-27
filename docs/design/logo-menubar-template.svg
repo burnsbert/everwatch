@@ -1,0 +1,6 @@
+<!-- Everwatch menu bar template glyph: 18x18 pt, pure black on transparent (NSImage.isTemplate = true lets
+     macOS tint it for light/dark/highlighted menu bars). Stroke 2pt at 1x. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+  <circle cx="9" cy="9" r="6.3" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-dasharray="27.7 39.6" transform="rotate(-20 9 9)"/>
+  <circle cx="9" cy="9" r="2.6" fill="#000"/>
+</svg>

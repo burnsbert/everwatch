@@ -1,0 +1,369 @@
+/* Everwatch UI: toolbar, status bar (Tokens Used strip), toasts.
+ * docs/design/VISUAL_SPEC.md §4.2, §4.10, §4.13, §4.18 (WP-B / T040).
+ * Every color, font size, radius and shadow comes from tokens.css. */
+
+/* ---------------------------------------------------------------- toolbar (§4.2) */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 0 var(--sp-3);
+  background: var(--bg-chrome);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  z-index: 3;
+  min-width: 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* D3: the native title bar already says "Everwatch" in the app. */
+.brand { display: flex; align-items: center; gap: var(--sp-2); min-width: 0; flex: none; margin-right: var(--sp-1); }
+html[data-shell="1"] .brand { display: none; }
+.brand-logo { width: 20px; height: 20px; flex: none; }
+.brand-name { font: var(--weight-semibold) var(--text-body); white-space: nowrap; }
+
+.waiting-pill {
+  display: inline-flex; align-items: center; gap: var(--sp-1h);
+  flex: none;
+  height: var(--control-h-sm); padding: 0 10px 0 var(--sp-2);
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--attention-soft);
+  color: var(--attention);
+  font: var(--weight-semibold) var(--text-control);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  transition: background-color var(--dur-1) var(--ease-standard);
+}
+.waiting-pill:hover { background: color-mix(in srgb, var(--attention) 18%, var(--attention-soft)); }
+.waiting-pill .glyph { width: 8px; height: 8px; }
+.waiting-pill .glyph--waiting::after { display: none; } /* halo on row glyphs only (§3.6) */
+
+/* Status indicator: borderless, never shrinks its text (A7). */
+.status-chip {
+  display: inline-flex; align-items: center; gap: var(--sp-1h);
+  flex: none;
+  height: var(--control-h); padding: 0 var(--sp-2);
+  border: 0;
+  border-radius: var(--radius-s);
+  background: transparent;
+  color: var(--fg-dim);
+  font: var(--weight-medium) var(--text-control);
+  white-space: nowrap;
+}
+.status-chip:hover { background: var(--bg-hover); color: var(--fg); }
+.status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--idle); flex: none; }
+.status-chip[data-level="ok"] .status-dot { background: var(--busy); }
+.status-chip[data-level="warn"] { color: var(--warn); background: color-mix(in srgb, var(--warn) 12%, var(--bg-chrome)); }
+.status-chip[data-level="warn"] .status-dot { background: var(--warn); }
+.status-chip[data-level="danger"] { color: var(--danger); background: color-mix(in srgb, var(--danger) 12%, var(--bg-chrome)); }
+.status-chip[data-level="danger"] .status-dot { background: var(--danger); }
+.status-chip[data-level="muted"] .status-dot { animation: breathe 1.6s ease-in-out infinite; }
+
+.status-pop {
+  position: fixed;
+  inset: auto;
+  top: calc(var(--toolbar-h) - var(--sp-1));
+  left: 170px;
+  margin: 0;
+  width: 280px;
+  padding: var(--sp-3) var(--sp-3) var(--sp-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-m);
+  background: var(--bg-popover);
+  color: var(--fg);
+  box-shadow: var(--shadow-2);
+}
+.status-pop-title { font: var(--weight-semibold) var(--text-body); margin-bottom: var(--sp-1); }
+.status-pop-body { color: var(--fg-dim); font: var(--weight-regular) var(--text-control); margin-bottom: var(--sp-3); }
+
+.toolbar-spacer { flex: 1 1 0; min-width: var(--sp-1); }
+
+.search {
+  position: relative;
+  display: flex; align-items: center;
+  /* the one toolbar item that gives way when space runs out */
+  flex: 0 1 auto;
+  min-width: 96px;
+  width: clamp(160px, 20vw, 240px);
+  height: var(--control-h);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-s);
+  background: var(--bg-pane);
+  transition: border-color var(--dur-1) var(--ease-standard);
+}
+.search:focus-within {
+  border-color: var(--focus);
+  box-shadow: var(--focus-ring);
+}
+/* a kept filter: accent, not amber (amber means waiting) */
+.search.is-active { border-color: var(--accent-fg); }
+.search-icon { position: absolute; left: var(--sp-2); width: 14px; height: 14px; color: var(--fg-dim); pointer-events: none; }
+.search-input {
+  flex: 1; min-width: 0; height: 100%;
+  padding: 0 var(--sp-2) 0 28px;
+  border: 0; background: transparent;
+  font: var(--weight-regular) var(--text-control);
+}
+.search-input::placeholder { color: var(--idle); }
+.search-input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+.search-input:focus-visible { outline: none; }
+.search-count { padding-right: var(--sp-2); color: var(--fg-dim); font: var(--weight-regular) var(--text-small); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.search-kbd { margin-right: var(--sp-1h); background: var(--bg-pane); }
+
+.toolbar .select-pill { flex: none; position: relative; }
+.select-icon { display: none; width: 16px; height: 16px; color: var(--fg-dim); pointer-events: none; }
+.toolbar .segmented { flex: none; }
+.toolbar-divider { width: 1px; height: 16px; background: var(--border-strong); flex: none; }
+.toolbar-buttons { display: inline-flex; gap: var(--sp-0h); flex: none; }
+#btn-agents { flex: none; }
+
+/* Pages keep the waiting pill, status, theme toggle and help; the rest
+   keep their space (visibility, not display) so the bar doesn't jump. */
+.app:is([data-view="usage"], [data-view="settings"], [data-view="diagnostics"], [data-view="onboarding"]) :is(.search, .select-pill, #view-switch, .toolbar-divider, #btn-agents, #btn-refresh, #btn-new, #btn-settings) {
+  visibility: hidden;
+}
+
+/* ---------------------------------------------------------------- status bar (§4.10) */
+
+.statusbar {
+  display: flex; align-items: center; gap: var(--sp-3);
+  padding: 0 var(--sp-3);
+  border-top: 1px solid var(--border);
+  background: var(--bg-chrome);
+  font: var(--weight-regular) var(--text-small);
+  color: var(--fg-dim);
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  user-select: none; -webkit-user-select: none;
+}
+.statusbar-spacer { flex: 1; min-width: 0; }
+.status-counts { flex: none; font-variant-numeric: tabular-nums; }
+/* Kept-filter chip: neutral (not amber), and it never drops. */
+.filter-chip {
+  display: inline-flex; align-items: center; gap: var(--sp-1);
+  flex: none;
+  height: 20px; padding: 0 var(--sp-1h) 0 var(--sp-2);
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--bg-hover);
+  color: var(--fg);
+  font: var(--weight-medium) var(--text-small);
+  max-width: 30vw; overflow: hidden;
+}
+.filter-chip:hover { background: color-mix(in srgb, var(--fg) 8%, var(--bg-hover)); }
+.filter-chip-text { overflow: hidden; text-overflow: ellipsis; }
+.hints { display: inline-flex; gap: var(--sp-3); flex: none; }
+.hint { display: inline-flex; align-items: center; gap: var(--sp-1); }
+.hint kbd { background: var(--bg-pane); }
+
+/* ---------------------------------------------------------------- Tokens Used strip (§4.18.2) */
+
+.tokens { display: flex; align-items: center; gap: var(--sp-3); flex: none; min-width: 0; }
+.tokens-label { display: inline-flex; align-items: center; gap: var(--sp-3); flex: none; font: var(--weight-semibold) var(--text-small); color: var(--fg-dim); }
+.tokens-label::after { content: ""; width: 1px; height: 14px; background: var(--border-strong); }
+.tokens-label-short { display: none; }
+.tokens-groups { display: flex; align-items: center; min-width: 0; }
+
+.tok-group { display: flex; align-items: center; gap: var(--sp-2); flex: none; }
+.tok-group + .tok-group::before {
+  content: ""; width: 1px; height: 14px; margin: 0 var(--sp-1) 0 var(--sp-3);
+  background: var(--border-strong);
+}
+.tok-provider { display: inline-flex; align-items: center; gap: var(--sp-1); flex: none; font: var(--weight-medium) var(--text-small); color: var(--fg); }
+.tok-provider-word { display: none; }
+.tok-glyph { width: 12px; height: 12px; }
+.tok-glyph--claude { color: var(--agent-claude); }
+.tok-glyph--codex { color: var(--agent-codex); }
+.tok-items { display: inline-flex; align-items: center; gap: var(--sp-2); }
+.tok-note { color: var(--idle); }
+.tok-note[hidden], .tok-warn[hidden] { display: none; }
+.tok-warn { display: inline-grid; place-items: center; color: var(--idle); border-radius: var(--radius-xs); }
+.tok-warn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+.tok-item {
+  display: inline-flex; align-items: center; gap: 5px;
+  flex: none;
+  height: 22px; padding: 0 var(--sp-1);
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: var(--fg-dim);
+  font: var(--weight-regular) var(--text-small);
+}
+.tok-item:hover { background: var(--bg-hover); }
+.tok-item:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.tok-name { color: var(--fg-dim); }
+.tok-short { display: none; }
+.tok-meter {
+  position: relative;
+  width: 40px; height: 4px; flex: none;
+  border-radius: var(--radius-xs);
+  background: var(--meter-track);
+  box-shadow: var(--meter-track-ring);
+  overflow: hidden;
+}
+.tok-fill {
+  display: block; height: 100%;
+  width: var(--pct, 0%);
+  border-radius: var(--radius-xs);
+  background: var(--fg-dim);
+  transition: width var(--dur-3) var(--ease-standard);
+}
+.tok-pct { min-width: 4ch; text-align: right; font: var(--weight-medium) var(--text-small); font-variant-numeric: tabular-nums; color: var(--fg-dim); }
+.tok-dollars[hidden] { display: none; }
+.tok-dollars { color: var(--fg-dim); }
+
+/* severity: yellow ≥ 50, red ≥ 80 (the backend's `level`), hit — unchanged
+   by T046: only the pace/hit *icon + run-out time* moved out, into its own
+   `.tok-alert` chip below. */
+.tok-item[data-level="yellow"] .tok-fill { background: var(--warn-fill); }
+.tok-item[data-level="yellow"] .tok-pct { color: var(--warn); font-weight: var(--weight-semibold); }
+.tok-item[data-level="red"] .tok-fill,
+.tok-item.is-hit .tok-fill { background: var(--danger); }
+.tok-item[data-level="red"] .tok-pct,
+.tok-item.is-hit .tok-pct { color: var(--danger); font-weight: var(--weight-semibold); }
+.tok-item.is-hit .tok-name { font-weight: var(--weight-semibold); color: var(--danger); }
+@media (prefers-reduced-motion: reduce) {
+  .tok-fill { transition: none; }
+}
+
+/* T046: pace ("on pace to run out") / hit ("limit reached") chips, side by
+   side, each its own small button — a different kind of mark (icon + time)
+   than severity (a color), same reasoning as §4.18.2. Icons are shared with
+   the retired in-item marks (`.tok-icon--pace`/`--hit`). */
+.tokens-alerts { display: inline-flex; align-items: center; gap: var(--sp-2); flex: none; }
+.tok-alert {
+  display: inline-flex; align-items: center; gap: var(--sp-1);
+  flex: none;
+  height: 20px; padding: 0 var(--sp-1h);
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  font: var(--weight-medium) var(--text-small);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.tok-alert:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.tok-alert[data-kind="pace"] { color: var(--warn); background: color-mix(in srgb, var(--warn-fill) 14%, var(--bg-chrome)); }
+.tok-alert[data-kind="pace"]:hover { background: color-mix(in srgb, var(--warn-fill) 22%, var(--bg-chrome)); }
+.tok-alert[data-kind="hit"] { color: var(--danger); background: color-mix(in srgb, var(--danger) 12%, var(--bg-chrome)); }
+.tok-alert[data-kind="hit"]:hover { background: color-mix(in srgb, var(--danger) 20%, var(--bg-chrome)); }
+.tok-alert .tok-icon { display: none; width: 12px; height: 12px; flex: none; }
+.tok-alert .tok-icon.is-shown { display: block; }
+.tok-alert .tok-icon--pace { color: var(--warn-fill); }
+.tok-alert .tok-icon--hit { color: var(--danger); }
+.tok-alert-short[hidden] { display: none; }
+
+/* §4.18.4 / §4.10 step-down: views/tokens.mjs raises data-fit one level at
+   a time until nothing overflows. */
+.statusbar:not([data-fit="0"]) .hints { display: none; }
+.statusbar:is([data-fit="2"], [data-fit="3"], [data-fit="4"], [data-fit="5"], [data-fit="6"]) .tok-alert-full { display: none; }
+.statusbar:is([data-fit="2"], [data-fit="3"], [data-fit="4"], [data-fit="5"], [data-fit="6"]) .tok-alert-short { display: inline; }
+.statusbar:is([data-fit="3"], [data-fit="4"], [data-fit="5"], [data-fit="6"]) .status-counts { display: none; }
+.statusbar:is([data-fit="4"], [data-fit="5"], [data-fit="6"]) .tok-full { display: none; }
+.statusbar:is([data-fit="4"], [data-fit="5"], [data-fit="6"]) .tok-short { display: inline; }
+.statusbar:is([data-fit="4"], [data-fit="5"], [data-fit="6"]) .tok-meter { width: 24px; }
+.statusbar:is([data-fit="5"], [data-fit="6"]) .tok-item:not(.is-worst) { display: none; }
+.statusbar:is([data-fit="5"], [data-fit="6"]) .tok-alert:not(.is-worst) { display: none; }
+.statusbar:is([data-fit="5"], [data-fit="6"]) .tok-name { display: none; }
+.statusbar:is([data-fit="5"], [data-fit="6"]) .tok-provider-name { display: none; }
+.statusbar:is([data-fit="5"], [data-fit="6"]) .tok-provider-word { display: inline; }
+.statusbar:is([data-fit="5"], [data-fit="6"]) .tokens-label-full { display: none; }
+.statusbar:is([data-fit="5"], [data-fit="6"]) .tokens-label-short { display: inline; }
+.statusbar[data-fit="6"] .tokens-label { display: none; }
+
+/* ---------------------------------------------------------------- toasts (P-31, §4.13) */
+
+.toasts {
+  /* Anchored under the toolbar rather than over the content/footers: a
+     top-center stack used to sit right on top of the preview's own footer
+     ("live · updated …") and the mini-strip. Docking to the top keeps
+     every toast clear of any pane's content and footer text. */
+  position: absolute;
+  left: 50%; top: calc(var(--toolbar-h) + var(--sp-2));
+  transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: var(--sp-2);
+  z-index: 20;
+  pointer-events: none;
+  width: min(420px, calc(100vw - 32px));
+}
+.toast {
+  display: inline-flex; align-items: center; gap: var(--sp-2);
+  max-width: 100%;
+  height: 32px; padding: 0 var(--sp-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-m);
+  background: var(--bg-popover);
+  color: var(--fg);
+  font: var(--weight-medium) var(--text-control);
+  box-shadow: var(--shadow-2);
+  pointer-events: auto;
+  animation: toast-in var(--dur-2) var(--ease-out);
+}
+.toast-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* No colored border on any level (§4.13) — only the leading glyph carries
+   the status color. `attention` reuses the app's own waiting glyph
+   (14px override of the 12px row/tile default); the rest are sprite icons. */
+.toast-icon { width: 14px; height: 14px; flex: none; color: var(--accent-fg); }
+.toast-glyph { width: 14px; height: 14px; }
+.toast[data-level="warn"] .toast-icon { color: var(--warn); }
+.toast[data-level="danger"] .toast-icon { color: var(--danger); }
+.toast-action {
+  flex: none;
+  margin: 0 calc(-1 * var(--sp-1)) 0 var(--sp-0h);
+  padding: 0 var(--sp-2);
+  height: var(--control-h-sm);
+  border: 0;
+  border-radius: var(--radius-s);
+  background: transparent;
+  color: var(--accent-fg);
+  font: var(--weight-semibold) var(--text-control);
+}
+.toast-action:hover { background: var(--bg-hover); }
+@keyframes toast-in { from { opacity: 0; transform: translateY(-4px); } }
+@media (prefers-reduced-motion: reduce) {
+  .toast { animation: none; }
+}
+
+/* ---------------------------------------------------------------- responsive (§6) */
+
+/* Toolbar fit down to the app window's 480 px minimum (shell
+   WebWindows.swift): drop the least-needed chrome first — every hidden
+   control keeps its key (/, s, r, n) and its ⌘K palette command. */
+@media (max-width: 1099px) {
+  .search { width: clamp(140px, 18vw, 200px); }
+  .brand-name { display: none; } /* browser mode only; the logo stays */
+}
+@media (max-width: 819px) {
+  .toolbar-divider { display: none; }
+  /* status: dot only (text in the tooltip / aria-label); token chip: icon + count */
+  .status-text { display: none; }
+  .status-chip { padding: 0; width: var(--control-h); justify-content: center; }
+  .token-chip-text { display: none; }
+  .token-chip { min-width: var(--control-h); }
+  .search-kbd { display: none; }
+}
+@media (max-width: 639px) {
+  /* sort becomes a 28px icon button over the same native <select> */
+  .toolbar .select-pill { width: var(--control-h); padding: 0; justify-content: center; }
+  .toolbar .select-pill select { position: absolute; inset: 0; width: 100%; opacity: 0; }
+  .toolbar .select-pill .select-chevron { display: none; }
+  .toolbar .select-pill .select-icon { display: block; }
+  .toolbar-spacer { display: none; }
+  .search { width: auto; flex: 1 1 120px; min-width: 96px; }
+  .toolbar-divider { display: none; }
+}
+@media (max-width: 699px) {
+  /* the view switch (⌘1–3, v, ⌘K) and the browser-only brand give way so
+     the waiting pill, status, token chip, filter, sort and AI-only toggle
+     keep their room */
+  #view-switch, .brand { display: none; }
+}
+@media (max-width: 539px) {
+  .toolbar { gap: var(--sp-1h); padding: 0 var(--sp-2); }
+  #btn-refresh, #btn-new { display: none; }
+}

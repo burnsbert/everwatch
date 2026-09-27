@@ -1,0 +1,359 @@
+/* Everwatch design tokens (docs/DESIGN.md §3.6, docs/design/VISUAL_SPEC.md §3).
+ *
+ * Two palettes, dark and light. `html[data-theme]` forces one; with no
+ * attribute ("system") prefers-color-scheme picks. The light palette is
+ * written twice (forced + system) and tests/js/theme.test.mjs asserts the two
+ * copies are identical and that every text/background pair in
+ * CONTRAST_PAIRS (js/lib/theme.mjs) passes WCAG AA in both palettes, and every
+ * NONTEXT_PAIRS pair passes 3:1.
+ * Text-bearing backgrounds are opaque, pre-blended hex so they can be tested.
+ *
+ * This is the only stylesheet allowed to hold literal colors, px font sizes,
+ * radii, and shadow recipes (scripts/lint_tokens.py, run by `make lint`).
+ */
+
+:root {
+  --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Monaco, monospace;
+  --font-session: var(--font-ui);
+  --session-name-size: var(--text-body-size);
+  --session-tile-size: var(--text-control-size);
+
+  /* §3.1 type scale. Each step is a size/line-height pair plus a `font`
+     shorthand without weight, so a rule can say `font: 500 var(--text-body)`.
+     Regular is slightly stronger than the platform default for legibility. */
+  --weight-regular: 500;
+  --weight-medium: 550;
+  --weight-semibold: 600;
+
+  --text-caption-size: 12px;  --text-caption-lh: 16px;  --text-caption-track: 0.01em;
+  --text-small-size: 13px;    --text-small-lh: 18px;
+  --text-control-size: 14px;  --text-control-lh: 20px;
+  --text-body-size: 15px;     --text-body-lh: 22px;
+  --text-title-size: 17px;    --text-title-lh: 24px;    --text-title-track: -0.01em;
+  --text-page-size: 22px;     --text-page-lh: 30px;     --text-page-track: -0.015em;
+  --text-metric-size: 24px;   --text-metric-lh: 32px;   --text-metric-track: -0.01em;
+  --mono-small-size: 13px;    --mono-small-lh: 18px;
+  --mono-tail-size: 13px;     --mono-tail-lh: 19px;
+  --mono-screen-size: 14px;   --mono-screen-lh: 20px;
+
+  --text-caption: var(--text-caption-size)/var(--text-caption-lh) var(--font-ui);
+  --text-small: var(--text-small-size)/var(--text-small-lh) var(--font-ui);
+  --text-control: var(--text-control-size)/var(--text-control-lh) var(--font-ui);
+  --text-body: var(--text-body-size)/var(--text-body-lh) var(--font-ui);
+  --text-title: var(--text-title-size)/var(--text-title-lh) var(--font-ui);
+  --text-page: var(--text-page-size)/var(--text-page-lh) var(--font-ui);
+  --text-metric: var(--text-metric-size)/var(--text-metric-lh) var(--font-ui);
+  --mono-small: var(--mono-small-size)/var(--mono-small-lh) var(--font-mono);
+  --mono-tail: var(--mono-tail-size)/var(--mono-tail-lh) var(--font-mono);
+  --mono-screen: var(--mono-screen-size)/var(--mono-screen-lh) var(--font-mono);
+
+  /* §3.2 spacing: 4-pt grid; the two half-steps are for control internals only */
+  --sp-0h: 2px;
+  --sp-1: 4px;
+  --sp-1h: 6px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+
+  /* §3.2 sizing */
+  --toolbar-h: 44px;
+  --footer-h: 30px;
+  --sidebar-w: 216px;
+  --rail-w: 30px; /* collapsed projects sidebar (§4.7): a slim accordion rail, not gone */
+  --control-h: 28px;
+  --control-h-sm: 24px;
+  --row-h: 44px;
+  --row-h-list: 30px;
+  --row-h-compact: 28px;
+  --menu-item-h: 24px;
+
+  /* §3.2 radii. --radius-bar is only for the 3px state bars and `mark`. */
+  --radius-bar: 2px;
+  --radius-xs: 4px;
+  --radius-s: 6px;
+  --radius-m: 8px;
+  --radius-l: 12px;
+  --radius-pill: 999px;
+
+  /* §3.6 motion */
+  --dur-1: 100ms;
+  --dur-2: 160ms;
+  --dur-3: 240ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* §4.19 tooltip component */
+  --tip-delay: 500ms;
+  --tip-warm: 300ms;
+  --tip-hide: 100ms;
+  --tip-max-w: 320px;
+  --tip-offset: 6px;
+
+  /* Focus ring (§3.4 --focus): a 3px translucent ring. Inputs add a 1px
+     solid --focus border on top. */
+  --focus-ring: 0 0 0 3px color-mix(in srgb, var(--focus) 45%, transparent);
+  --focus-ring-color: color-mix(in srgb, var(--focus) 45%, transparent);
+
+  /* Ring recipes (WP-B, §3.5 / §4.3 / §4.5 / §4.7 / §4.17): 1px inset rings
+     and the tile selection halo, as tokens so no stylesheet holds a
+     literal shadow. `currentColor` resolves where the token is used. */
+  --ring-chip: inset 0 0 0 1px var(--chip-ring);
+  --ring-badge-selected: inset 0 0 0 1px color-mix(in srgb, currentColor 30%, transparent);
+  --ring-badge-shell: inset 0 0 0 1px var(--border-strong);
+  --ring-drop: inset 0 0 0 1px var(--focus);
+  --ring-focus-inset: inset 0 0 0 2px var(--focus);
+  --ring-tile-selected: 0 0 0 3px color-mix(in srgb, var(--focus) 30%, transparent);
+
+  /* iTerm2's tab-color presets, exact RGB (itermcolor.py:23-31) */
+  --tab-red: rgb(251, 107, 98);
+  --tab-orange: rgb(246, 172, 71);
+  --tab-yellow: rgb(240, 220, 79);
+  --tab-green: rgb(181, 215, 73);
+  --tab-blue: rgb(95, 163, 248);
+  --tab-purple: rgb(193, 142, 217);
+  --tab-gray: rgb(120, 120, 120);
+}
+
+html[data-session-font="sans"] { --font-session: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+html[data-session-font="mono"] { --font-session: var(--font-mono); }
+html[data-session-font-size="12"] { --session-name-size: 12px; --session-tile-size: 12px; }
+html[data-session-font-size="13"] { --session-name-size: 13px; --session-tile-size: 13px; }
+html[data-session-font-size="14"] { --session-name-size: 14px; --session-tile-size: 14px; }
+html[data-session-font-size="15"] { --session-name-size: 15px; --session-tile-size: 15px; }
+html[data-session-font-size="16"] { --session-name-size: 16px; --session-tile-size: 16px; }
+html[data-session-font-size="18"] { --session-name-size: 18px; --session-tile-size: 18px; }
+
+/* @aliases — retired token names (VISUAL_SPEC.md §3.7), kept so rules that
+ * later work packages haven't migrated yet keep resolving. Each value must be
+ * exactly `var(--token)`; the theme test resolves them against both palettes.
+ * Delete a line once nothing references its name. */
+:root {
+  --sel-claude-bg: var(--bg-selected);
+  --sel-codex-bg: var(--bg-selected);
+  --sel-plain-bg: var(--bg-selected);
+  --sel-plain-fg: var(--fg);
+  --badge-plain-bg: var(--badge-bg);
+  --accent-claude: var(--agent-claude);
+  --accent-codex: var(--agent-codex);
+  --badge-claude-bg: var(--agent-claude-bg);
+  --badge-codex-bg: var(--agent-codex-bg);
+  --label: var(--fg);
+  --row-fresh-bg: var(--bg-pane);
+  --dur-fast: var(--dur-1);
+  --dur-med: var(--dur-3);
+}
+
+/* @palette dark */
+:root,
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #151517;
+  --bg-chrome: #1c1c1f;
+  --bg-pane: #19191c;
+  --bg-elev: #212125;
+  --bg-popover: #2a2a2e;
+  --bg-term: #0f0f11;
+  --bg-hover: #252529;
+  --bg-selected: #132846;
+  --bg-selected-inactive: #2c2c31;
+  --fg: #ececf0;
+  --fg-dim: #a1a1aa;
+  --idle: #8e8e98;
+  --chrome: #56565f;
+  --border: #28282c;
+  --border-strong: #3a3a40;
+  --accent: #0a6cf0;
+  --accent-hover: #0a5fd6;
+  --accent-fg: #4c9bff;
+  --on-accent: #ffffff;
+  --focus: #4c9bff;
+  /* Stable per-agent colours (badge, preview accent line): deliberately
+     teal/magenta, not near any of the 7 tab-color presets or the
+     busy/attention/idle state colours, so agent kind never gets read as a
+     project color or a state (docs/DESIGN.md P-39 vs agent kind). */
+  --agent-claude: #4fe0cf;
+  --agent-claude-bg: #123a37;
+  --agent-codex: #ed82d2;
+  --agent-codex-bg: #37152f;
+  --badge-bg: #2a2a2f;
+  --attention: #ffaf00;
+  --attention-fill: #ffaf00;
+  --attention-glyph: #ffaf00;
+  --on-attention: #1a1000;
+  --attention-soft: #3a2f17;
+  --row-waiting-bg: #211d15;
+  --busy: #5fd38a;
+  --danger: #ff6961;
+  --danger-fill: #c62828;
+  /* quota severity (§4.18): true yellow, never confused with waiting amber */
+  --warn: #ffd60a;
+  --warn-fill: #ffd60a;
+  --meter-track: #3a3a40;
+  --meter-track-ring: none;
+  --flash-bg: #ffaf00;
+  --flash-fg: #000000;
+  --mark-bg: #5f4715;
+  --chip-ring: rgba(255, 255, 255, 0.16);
+  /* Per-project session title (§4.3, T046): dark theme tints the row/tile
+     title text itself, in the exact tab-color hue — already ≥4.5:1 on
+     every row background it appears on (--bg-pane, --bg-selected,
+     --row-waiting-bg), so no lightening is needed. The matching *-tint
+     token is a light-theme-only background wash; here it's just the
+     unused palette's placeholder (contrast test runs both palettes). */
+  --project-red-text: #fb6b62;
+  --project-yellow-text: #f0dc4f;
+  --project-green-text: #b5d749;
+  --project-blue-text: #5fa3f8;
+  --project-purple-text: #c18ed9;
+  --project-red-tint: #19191c;
+  --project-yellow-tint: #19191c;
+  --project-green-tint: #19191c;
+  --project-blue-tint: #19191c;
+  --project-purple-tint: #19191c;
+  /* §3.3 elevation */
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-2: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-3: 0 24px 64px rgba(0, 0, 0, 0.55);
+  --backdrop: rgba(0, 0, 0, 0.45);
+  /* legacy shadow colour: remove once WP-B/C/D have moved to --shadow-1/2/3 */
+  --shadow: rgba(0, 0, 0, 0.55);
+}
+
+/* @palette light */
+html[data-theme="light"] {
+  color-scheme: light;
+  --bg: #a8a8b8;
+  --bg-chrome: #b8b8c8;
+  --bg-pane: #c8c8d4;
+  --bg-elev: #d8d8e2;
+  --bg-popover: #dcdce6;
+  --bg-term: #bcbcc9;
+  --bg-hover: #bdbdca;
+  --bg-selected: #b8b8bc;
+  --bg-selected-inactive: #bdbdc1;
+  --fg: #20212c;
+  --fg-dim: #383a47;
+  --idle: #383a47;
+  --chrome: #7b7d8a;
+  --border: #a4a4b3;
+  --border-strong: #898b9b;
+  --accent: #0a5fd6;
+  --accent-hover: #084eae;
+  --accent-fg: #123976;
+  --on-accent: #ffffff;
+  --focus: #123976;
+  --agent-claude: #07594f;
+  --agent-claude-bg: #bad8d5;
+  --agent-codex: #7d1760;
+  --agent-codex-bg: #dac5d8;
+  --badge-bg: #b9b9c7;
+  --attention: #543000;
+  --attention-fill: #ffb224;
+  --attention-glyph: #8c4e00;
+  --on-attention: #1f1300;
+  --attention-soft: #d4c4ad;
+  --row-waiting-bg: #d7c9b8;
+  --busy: #084a27;
+  --danger: #711111;
+  --danger-fill: #c62828;
+  --warn: #4c3d00;
+  --warn-fill: #685200;
+  --meter-track: #b7b7c4;
+  --meter-track-ring: inset 0 0 0 1px var(--border);
+  --flash-bg: #ffb224;
+  --flash-fg: #000000;
+  --mark-bg: #e0c995;
+  --chip-ring: rgba(0, 0, 0, 0.28);
+  /* Per-project session row/tile tint (§4.3, T046): a subtle opaque wash
+     of the tab color over --bg-pane/--bg-elev — blue and yellow are
+     mixed stronger (30%, vs 16% for red/green/purple) so they read as
+     visibly distinct from --bg-selected and --row-waiting-bg, which sit
+     in the same blue/yellow hue family. The matching *-text token is the
+     unused palette's placeholder (light theme tints the background, not
+     the title text; it stays --fg here, same value, so the pair is
+     trivially AA). */
+  --project-red-tint: #d8c4c7;
+  --project-yellow-tint: #d8d0ab;
+  --project-green-tint: #c8d4ba;
+  --project-blue-tint: #b8cbe2;
+  --project-purple-tint: #d0bfd8;
+  --project-red-text: #20212c;
+  --project-yellow-text: #20212c;
+  --project-green-text: #20212c;
+  --project-blue-text: #20212c;
+  --project-purple-text: #20212c;
+  --shadow-1: 0 1px 2px rgba(16, 16, 24, 0.10);
+  --shadow-2: 0 8px 24px rgba(16, 16, 24, 0.14), 0 1px 3px rgba(16, 16, 24, 0.08);
+  --shadow-3: 0 24px 64px rgba(16, 16, 24, 0.20);
+  --backdrop: rgba(0, 0, 0, 0.25);
+  --shadow: rgba(24, 24, 40, 0.18);
+}
+
+/* @palette light (system) — must match the block above exactly */
+@media (prefers-color-scheme: light) {
+  html:not([data-theme]) {
+    color-scheme: light;
+    --bg: #a8a8b8;
+    --bg-chrome: #b8b8c8;
+    --bg-pane: #c8c8d4;
+    --bg-elev: #d8d8e2;
+    --bg-popover: #dcdce6;
+    --bg-term: #bcbcc9;
+    --bg-hover: #bdbdca;
+    --bg-selected: #b8b8bc;
+    --bg-selected-inactive: #bdbdc1;
+    --fg: #20212c;
+    --fg-dim: #383a47;
+    --idle: #383a47;
+    --chrome: #7b7d8a;
+    --border: #a4a4b3;
+    --border-strong: #898b9b;
+    --accent: #0a5fd6;
+    --accent-hover: #084eae;
+    --accent-fg: #123976;
+    --on-accent: #ffffff;
+    --focus: #123976;
+    --agent-claude: #07594f;
+    --agent-claude-bg: #bad8d5;
+    --agent-codex: #7d1760;
+    --agent-codex-bg: #dac5d8;
+    --badge-bg: #b9b9c7;
+    --attention: #543000;
+    --attention-fill: #ffb224;
+    --attention-glyph: #8c4e00;
+    --on-attention: #1f1300;
+    --attention-soft: #d4c4ad;
+    --row-waiting-bg: #d7c9b8;
+    --busy: #084a27;
+    --danger: #711111;
+    --danger-fill: #c62828;
+    --warn: #4c3d00;
+    --warn-fill: #685200;
+    --meter-track: #b7b7c4;
+    --meter-track-ring: inset 0 0 0 1px var(--border);
+    --flash-bg: #ffb224;
+    --flash-fg: #000000;
+    --mark-bg: #e0c995;
+    --chip-ring: rgba(0, 0, 0, 0.28);
+    --project-red-tint: #d8c4c7;
+    --project-yellow-tint: #d8d0ab;
+    --project-green-tint: #c8d4ba;
+    --project-blue-tint: #b8cbe2;
+    --project-purple-tint: #d0bfd8;
+    --project-red-text: #20212c;
+    --project-yellow-text: #20212c;
+    --project-green-text: #20212c;
+    --project-blue-text: #20212c;
+    --project-purple-text: #20212c;
+    --shadow-1: 0 1px 2px rgba(16, 16, 24, 0.10);
+    --shadow-2: 0 8px 24px rgba(16, 16, 24, 0.14), 0 1px 3px rgba(16, 16, 24, 0.08);
+    --shadow-3: 0 24px 64px rgba(16, 16, 24, 0.20);
+    --backdrop: rgba(0, 0, 0, 0.25);
+    --shadow: rgba(24, 24, 40, 0.18);
+  }
+}

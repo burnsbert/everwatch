@@ -1,0 +1,251 @@
+/* Everwatch UI: help sheet, command palette, confirm/quota dialogs,
+ * context menu. Split mechanically from app.css (WP-A,
+ * docs/design/VISUAL_SPEC.md §8). */
+
+/* ---------------------------------------------------------------- help sheet (P-30) */
+
+.help-sheet {
+  width: min(720px, calc(100vw - 48px));
+  max-height: calc(100vh - 80px);
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-l);
+  background: var(--bg-popover);
+  color: var(--fg);
+  box-shadow: var(--shadow-3);
+  overflow: auto;
+}
+.help-sheet:focus, .help-sheet:focus-visible { outline: none; }
+.help-sheet[open] { animation: rise var(--dur-2) var(--ease-out); }
+.help-sheet::backdrop { background: var(--backdrop); }
+.help-head { display: flex; align-items: baseline; justify-content: space-between; padding: 18px 22px 8px; }
+.help-head h2 { font: var(--weight-semibold) var(--text-title); }
+.help-sub { font-size: var(--text-small-size); color: var(--idle); }
+.help-body { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 28px; padding: 6px 22px 22px; }
+/* §4.11: section headings are sentence case, not violet. */
+.help-section h3 {
+  margin: 12px 0 6px;
+  font: var(--weight-semibold) var(--text-small);
+  color: var(--fg-dim);
+}
+.help-section dl { margin: 0; }
+/* §4.12: description left, keys right-aligned (menu convention), row
+   height --menu-item-h. `dt` (keys) still comes first in the DOM/a11y
+   order; only the visual order flips. */
+.help-item { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; height: var(--menu-item-h); }
+.help-item dt { order: 2; display: flex; gap: 3px; flex-wrap: wrap; justify-content: flex-end; }
+.help-item dd { order: 1; margin: 0; font-size: var(--text-body-size); }
+.help-item kbd { height: 18px; min-width: 18px; }
+/* D2: the footer's glyph legend, moved here as the sheet's first row. */
+.help-legend { display: grid; }
+.help-legend .legend-item { display: flex; align-items: center; gap: 8px; min-height: var(--menu-item-h); }
+.help-legend .glyph { width: 12px; height: 12px; }
+
+/* ---------------------------------------------------------------- command palette (W-3, W-8) */
+
+.palette {
+  /* §4.11: placed at 18vh from the top, not vertically centered like a
+     default <dialog>. */
+  position: fixed;
+  inset: 18vh auto auto 50%;
+  margin: 0;
+  transform: translateX(-50%);
+  width: min(600px, calc(100vw - 48px));
+  max-height: min(520px, calc(100vh - 18vh - 24px));
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-l);
+  background: var(--bg-popover);
+  color: var(--fg);
+  box-shadow: var(--shadow-3);
+  overflow: hidden;
+}
+/* Scoped to `[open]`, not a bare `.palette { display: flex }`: an
+   unconditional `display` would override the UA's
+   `dialog:not([open]) { display: none }` (a class beats a type+attribute
+   selector), leaving the dialog visible after `.close()`. */
+.palette[open] { display: flex; flex-direction: column; }
+.palette:focus, .palette:focus-visible { outline: none; }
+.palette[open] { animation: rise var(--dur-2) var(--ease-out); }
+.palette::backdrop { background: var(--backdrop); }
+.palette-search {
+  display: flex; align-items: center; gap: 10px;
+  height: 48px; padding: 0 16px;
+  border-bottom: 1px solid var(--border);
+  flex: none;
+}
+.palette-search .icon { width: 16px; height: 16px; color: var(--fg-dim); flex: none; }
+.palette-input {
+  flex: 1; min-width: 0;
+  border: none; background: none; color: var(--fg);
+  font-size: var(--text-title-size);
+}
+.palette-input:focus, .palette-input:focus-visible { outline: none; }
+.palette-input::placeholder { color: var(--fg-dim); }
+/* §4.11: a text hint ("⌘K Commands" / "⌘⇧F Screens") with a kbd, no pill
+   border — not a button-looking control. */
+.palette-mode-btn {
+  flex: none;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--fg-dim);
+  font: var(--weight-medium) var(--text-small);
+  white-space: nowrap;
+}
+.palette-mode-btn:hover { color: var(--fg); }
+.palette-mode-btn kbd { height: 16px; min-width: 16px; }
+.palette-list {
+  flex: 1; min-height: 0; overflow-y: auto;
+  padding: 6px;
+}
+.palette-item {
+  display: flex; align-items: center; gap: 10px;
+  height: 32px; padding: 0 10px;
+  border-radius: var(--radius-s);
+  cursor: default;
+}
+.palette-item[data-type="hit"] { height: auto; align-items: flex-start; flex-direction: column; gap: 2px; padding: 8px 10px; }
+.palette-item.is-active { background: var(--bg-selected); }
+/* §4.11: "sessions show a leading glyph + chip; commands have no leading
+   icon" — a session item's own state glyph + tab-color dot. */
+.palette-item-lead { display: inline-flex; align-items: center; gap: 6px; flex: none; }
+.palette-item-dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+.palette-item-label {
+  flex: 1; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-size: var(--text-body-size);
+}
+.palette-item-sub {
+  flex: none;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  max-width: 42%;
+  font-size: var(--text-small-size); color: var(--fg-dim);
+}
+.palette-item[data-type="hit"] .palette-item-sub { max-width: none; }
+.palette-item-keys { flex: none; display: flex; gap: 3px; }
+.palette-item-keys kbd { height: 18px; min-width: 18px; }
+.palette-item-context {
+  width: 100%; margin: 0;
+  padding: 6px 8px;
+  border-radius: var(--radius-xs);
+  background: var(--bg-term);
+  color: var(--fg-dim);
+  font: var(--weight-regular) var(--mono-tail);
+  white-space: pre-wrap; word-break: break-all;
+}
+.palette-item-context mark { background: var(--mark-bg); color: inherit; border-radius: var(--radius-bar); }
+.palette-empty { padding: 28px 16px; text-align: center; color: var(--fg-dim); font-size: var(--text-control-size); }
+.palette-foot {
+  display: flex; gap: 14px;
+  height: 32px; padding: 0 14px;
+  border-top: 1px solid var(--border);
+  flex: none;
+}
+.palette-hint { display: flex; align-items: center; gap: 6px; font-size: var(--text-small-size); color: var(--fg-dim); }
+.palette-hint kbd { height: 18px; min-width: 18px; }
+
+/* ---------------------------------------------------------------- confirm / quota dialogs (P-63, P-64, P-69) */
+
+.confirm-dialog {
+  /* §4.11: macOS alert rhythm — 320 wide, padding 20. */
+  width: min(320px, calc(100vw - 48px));
+  padding: 20px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-l);
+  background: var(--bg-popover);
+  color: var(--fg);
+  box-shadow: var(--shadow-3);
+}
+.confirm-dialog::backdrop { background: var(--backdrop); }
+.confirm-title { font: var(--weight-semibold) var(--text-body); }
+.confirm-detail { margin-top: 4px; color: var(--fg-dim); font-size: var(--text-control-size); }
+.confirm-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+.confirm-actions .btn { min-width: 80px; }
+
+/* ---------------------------------------------------------------- context menu (P-48, §4.9) */
+
+.ctx-menu {
+  position: fixed;
+  min-width: 200px;
+  padding: 5px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-m);
+  background: var(--bg-popover);
+  box-shadow: var(--shadow-2);
+  z-index: 30;
+  display: flex; flex-direction: column;
+}
+.ctx-item {
+  display: flex; align-items: center; gap: 0;
+  height: var(--menu-item-h);
+  padding: 0 10px 0 8px;
+  border: 0; border-radius: var(--radius-xs);
+  background: transparent;
+  color: var(--fg);
+  font: var(--weight-regular) var(--text-body);
+  text-align: left;
+}
+/* Highlight (hover or keyboard) is the native menu look: accent bg + the
+   on-accent text pair (already AA), and the trailing shortcut fades to
+   white at 80% rather than staying dim. */
+.ctx-item:hover, .ctx-item:focus-visible {
+  background: var(--accent);
+  color: var(--on-accent);
+  outline: none;
+}
+.ctx-item:hover .ctx-item-key, .ctx-item:focus-visible .ctx-item-key { color: color-mix(in srgb, var(--on-accent) 80%, transparent); }
+.ctx-item.ctx-danger { color: var(--danger); }
+.ctx-item.ctx-danger:hover, .ctx-item.ctx-danger:focus-visible { background: var(--danger); color: var(--on-accent); }
+.ctx-item-lead { display: flex; align-items: center; justify-content: center; width: 16px; flex: none; }
+.ctx-item-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ctx-item-key { flex: none; margin-left: 12px; font-size: var(--text-small-size); color: var(--fg-dim); }
+.ctx-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.ctx-dot--red { background: var(--tab-red); }
+.ctx-dot--orange { background: var(--tab-orange); }
+.ctx-dot--yellow { background: var(--tab-yellow); }
+.ctx-dot--green { background: var(--tab-green); }
+.ctx-dot--blue { background: var(--tab-blue); }
+.ctx-dot--purple { background: var(--tab-purple); }
+.ctx-dot--gray { background: var(--tab-gray); }
+.ctx-sep { height: 1px; margin: 4px 6px; background: var(--border); }
+.ctx-label { height: 20px; padding: 3px 8px 0; font: var(--weight-semibold) var(--text-small); color: var(--fg-dim); }
+
+/* ---------------------------------------------------------------- tooltip (§4.19) */
+
+/* Always in the DOM (index.html), positioned in JS (views/tooltip.mjs).
+   `visibility` (not `display`) so its box is measurable — the JS reads
+   offsetWidth/offsetHeight to place it — the instant content is set, with
+   no display:none → block transition-killing frame to work around. */
+#tooltip {
+  position: fixed;
+  left: 0; top: 0;
+  z-index: 40;
+  max-width: var(--tip-max-w);
+  padding: 6px 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-s);
+  background: var(--bg-popover);
+  color: var(--fg);
+  box-shadow: var(--shadow-2);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--dur-1) var(--ease-out);
+}
+#tooltip.is-visible { opacity: 1; visibility: visible; pointer-events: auto; }
+.tip-title { font: var(--weight-semibold) var(--text-control); }
+.tip-body { margin-top: 2px; font: var(--weight-regular) var(--text-control); }
+.tip-line { margin-top: 2px; font-size: var(--text-small-size); color: var(--fg-dim); }
+.tip-line--warn { color: var(--warn); }
+.tip-line--danger { color: var(--danger); }
+@media (prefers-reduced-motion: reduce) {
+  #tooltip { transition: none; }
+}
+
+/* ---------------------------------------------------------------- responsive */
+
+@media (max-width: 620px) {
+  .help-body { grid-template-columns: minmax(0, 1fr); }
+}
