@@ -1,9 +1,9 @@
 # Permissions guide
 
-Everwatch needs exactly **one** macOS permission — Automation access to
-control iTerm2 — to do anything at all. Everything else (notifications,
-tab colors, global hotkeys) is optional. This page walks through every
-state each permission can be in and the exact fix.
+Live iTerm2 monitoring needs **one** macOS permission: Automation access
+to control iTerm2. The scripted browser demo needs none. Everything else
+(notifications, tab colors, global hotkeys) is optional. This page walks
+through every state each permission can be in and the exact fix.
 
 Run `everwatch doctor` any time to see the live state of every check
 below as a terminal table (`--json` for raw output). The same checks
@@ -83,8 +83,9 @@ Everwatch doesn't appear in the Automation list at all after clicking OK):
 
 Notifications are **always silent** — Everwatch never uses `.sound` and
 never plays audio for a notification, regardless of this setting. This
-permission only controls whether you see a banner/badge at all when a
-session starts waiting on you.
+permission controls whether you see a notification banner when a
+session starts waiting on you. Waiting notifications and the Dock icon
+count are separate Settings options; both are off by default.
 
 | State | What you'll see | Fix |
 |---|---|---|

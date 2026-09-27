@@ -370,21 +370,6 @@
     },
     {
      "dollars": null,
-     "hit": true,
-     "id": "cc.seven_day_sonnet",
-     "label": "CC Sonnet Limit",
-     "level": "red",
-     "pct": 100.0,
-     "projection": {
-      "at": null,
-      "hit": true,
-      "text": "sonnet limit hit"
-     },
-     "reset_at": "2026-09-27T23:00:00+00:00",
-     "reset_text": "2d 4h (Sunday at 7:00pm)"
-    },
-    {
-     "dollars": null,
      "hit": false,
      "id": "cc.monthly",
      "label": "CC Monthly Limit",
@@ -428,7 +413,7 @@
    "status": "ok"
   }
  },
- "version": "0.2.4",
+ "version": "0.2.5",
  "waiting_order": [
   "5E1C0A7B-1F2D-4E8A-9B3C-0D4E5F6A7B01",
   "5E1C0A7B-1F2D-4E8A-9B3C-0D4E5F6A7B03"

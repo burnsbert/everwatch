@@ -160,15 +160,14 @@ def _confirm(stdin, stdout, prompt):
 
 
 def _diag_kwargs(args):
-    """`--demo-diagnostics <preset>` (serve/doctor): forces a named
-    diagnostics preset over fake, no-I/O probes, so the UI engineer (and
-    `doctor`, safely) can drive every onboarding/Settings state without
-    touching real iTerm2, the keychain, or the network."""
+    """Demo runs use fake, no-I/O diagnostics probes (the `all_ok`
+    preset by default). `--demo-diagnostics <preset>` selects another
+    scripted state without touching iTerm2, the keychain, or the network."""
     preset = getattr(args, 'demo_diagnostics', None)
-    if not preset:
+    if not preset and not getattr(args, 'demo', False):
         return {}
     return {'diag_probes': diagnostics.FakeProbes(),
-           'demo_diag_preset': preset}
+           'demo_diag_preset': preset or 'all_ok'}
 
 
 def _selftest_runner(argv, timeout=None):
@@ -373,7 +372,7 @@ def cmd_demo(args, stdin, stdout):
     return _serve_until_stopped(
         lambda: build_engine(args), host='127.0.0.1', port=args.port,
         token=token, stdin=stdin, stdout=stdout,
-        open_browser=not args.no_open)
+        open_browser=not getattr(args, 'no_open', False))
 
 
 def cmd_app(args, stdin, stdout):
@@ -383,7 +382,9 @@ def cmd_app(args, stdin, stdout):
     native app; falls back to exactly what `everwatch open` does (serve
     the backend and open a browser tab) when there's no native app to
     launch (a --browser-only install, or one where Everwatch.app was
-    removed by hand)."""
+    removed by hand). `--demo` always opens the sample browser UI."""
+    if args.demo:
+        return cmd_demo(args, stdin, stdout)
     if os.path.isdir(os.path.join(_app_dir(), 'Everwatch.app')):
         _launch_app()
         return 0
@@ -654,8 +655,8 @@ def build_parser():
 
     app = sub.add_parser(
         'app', help='open the installed Everwatch.app (default when no '
-                    "command is given); falls back to `open` if it "
-                    "isn't installed")
+                    "command is given); --demo opens sample sessions in "
+                    "a browser")
     app.add_argument('--port', type=int, default=0)
     app.add_argument('--demo', action='store_true')
     app.add_argument('--seed', type=int, default=1)

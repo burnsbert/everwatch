@@ -491,11 +491,6 @@
     "rate_per_hour": 0.4,
     "resets_in": 273600
    },
-   "seven_day_sonnet": {
-    "utilization": 100,
-    "rate_per_hour": 0,
-    "resets_in": 187200
-   },
    "extra_usage": {
     "is_enabled": true,
     "monthly_limit": 20000,

@@ -10,7 +10,7 @@ PYTHON ?= python3
 PY39   ?= /usr/bin/python3
 NODE   ?= node
 
-.PHONY: test test-fast test-py test-py39 test-js test-swift test-e2e test-e2e-real \
+.PHONY: test test-fast test-py test-py39 test-js test-swift test-e2e test-e2e-real demo \
         test-shell-integration test-install lint screenshots clean app app-dev coverage-swift \
         icon golden install install-dev uninstall dist release docs-keys
 
@@ -128,6 +128,11 @@ lint:
 # visible window, never the real display, never a sound).
 screenshots:
 	EVERWATCH_NO_SOUND=1 PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 EVERWATCH_E2E_PYTHON=$(PYTHON) $(NODE) scripts/screenshots.mjs
+
+# Interactive browser UI with sample sessions and a disposable data dir.
+# Does not start, stop, or focus the installed native app.
+demo:
+	EVERWATCH_DEMO_PYTHON=$(PYTHON) bash scripts/demo.sh
 
 # Regenerates README.md's "Keyboard shortcuts" table from the single
 # source of truth, everwatch/web/js/keymap.mjs's BINDINGS table, so the

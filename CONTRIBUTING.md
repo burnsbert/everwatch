@@ -29,7 +29,7 @@ shipped runtime has zero npm dependencies).
 | `make test-js` | `node:test` unit tests over `everwatch/web/js`, gated at ≥90% lines / 85% branches via `c8`. |
 | `make test-swift` | Swift Testing over `shell/Sources/Core` (built with `swiftc`, not SwiftPM — see `docs/DESIGN.md` §5.4), plus a compile check of `Sources/App`. |
 | `make test-e2e` | Headless Playwright/Chromium end-to-end tests against a demo backend (a JS fixture server stands in for the Python backend). |
-| `make test-e2e-real` | 5 smoke tests (`tests/e2e/real/smoke.spec.mjs`) against the real `python3 -m everwatch serve --demo` backend instead of the JS fixture server. |
+| `make test-e2e-real` | Browser smoke tests (`tests/e2e/real/smoke.spec.mjs`) against the real `python3 -m everwatch serve --demo` backend instead of the JS fixture server. |
 | `make test-shell-integration` | A headless runtime test of the built `Everwatch.app` (`scripts/shell_selftest.sh`): never shown, focused, or given a real permission prompt. |
 | `make test-install` | `install.sh`'s own hermetic end-to-end test (`tests/install/test_install.sh`) — runs entirely inside a temp `--prefix`/`--from-local`, never touching the real `~/Applications`, `~/Library/Application Support/Everwatch`, or `~/.local/bin`. |
 | `make lint` | No-sound lint, parity accounting (`scripts/check_parity.py`), Python byte-compile, `bash -n` checks of the shell scripts, JS syntax checks, and `shellcheck` (if installed). |
@@ -105,6 +105,11 @@ the app's own help sheet (`?`) shows:
 ```bash
 make docs-keys
 ```
+
+To explore sample data or update the README images, use `make demo` or
+`make screenshots`, respectively. Both run separately from an installed
+Everwatch app. The [screenshot guide](docs/SCREENSHOTS.md) covers the
+temporary data directory, fixed scenario, and image review.
 
 ## Code review expectations
 

@@ -23,8 +23,8 @@ to see who's stuck waiting for you.
 ## Why Everwatch
 
 - **See who's stuck, at a glance.** A waiting session gets an amber
-  highlight, a menu-bar count, and a silent notification you can click to
-  jump straight to it — in iTerm2, not a separate terminal.
+  highlight and a menu-bar count. Optional silent notifications can take
+  you straight to that session in iTerm2.
 - **Live previews without switching tabs.** Split, list, and grid ("camera
   wall") layouts show the tail of every session's screen, so you can read
   a permission prompt or a stack trace before you tab over.
@@ -36,7 +36,7 @@ to see who's stuck waiting for you.
   keyboard (with a command palette, ⌘K, if you'd rather search than
   memorize), and works fine with a mouse if you'd rather not.
 - **Try it before you trust it.** `everwatch demo` runs a realistic,
-  scripted fleet of sessions — no permissions, no real iTerm2 required.
+  scripted fleet of sessions in a browser — no permissions or iTerm2 required.
 - **Nothing leaves your Mac.** The backend is a localhost-only server with
   a per-launch token. No telemetry, no accounts, no network calls except
   the ones you already trust (Anthropic/OpenAI usage APIs, GitHub for
@@ -52,6 +52,10 @@ in dark mode, a subtle row tint in light mode). The bottom bar is the
 always-visible "Tokens Used" strip, with a small chip for every
 on-pace-to-run-out or hit-limit warning, side by side.
 
+All screenshots in this README use scripted sample sessions and usage
+data. They were captured with `make screenshots`, which starts a
+disposable demo backend and renders the UI in headless Chromium.
+
 ![Split view](docs/screenshots/split-dark.png)
 
 **Live preview + reply** — the selected session's preview refreshes about
@@ -59,8 +63,8 @@ once a second, and a reply bar under it types into the session: answer a
 Claude Code or Codex prompt with one click, interrupt with Esc or ⌃C, or
 send a follow-up.
 
-**Grid view** — a camera wall of every AI session at once (the Agents/All
-switch adds plain shells).
+**Grid view** — a camera wall of AI sessions. Switch to **All sessions** to
+include plain shells; **AI sessions** shows only Claude Code and Codex.
 
 ![Grid view](docs/screenshots/grid-dark.png)
 
@@ -70,13 +74,21 @@ here.
 
 ![Usage view](docs/screenshots/usage-light.png)
 
+**Settings** — choose light, dark, or system appearance; select the
+session font and size; and opt in to notifications or a Dock icon count.
+The toolbar gear opens Settings, and **Back to Sessions** returns to the
+main view.
+
+![Settings](docs/screenshots/settings-light.png)
+
 **Command palette (⌘K)** — fuzzy "go to session…" plus every command in
 the keymap, including screen search (⌘⇧F).
 
 ![Command palette](docs/screenshots/palette-dark.png)
 
-**Compact mode (⌘\\)** — a small floating panel that sits beside iTerm2;
-the agent badges shrink to their glyphs but never disappear.
+**Compact mode (⌘\\)** — the native app's small floating panel that sits
+beside iTerm2; the agent badges shrink to their glyphs but never disappear.
+The image below shows its layout in the browser screenshot harness.
 
 ![Compact mode](docs/screenshots/compact-dark.png)
 
@@ -114,12 +126,17 @@ make install
 **Try it without granting anything:**
 
 ```bash
-everwatch demo
+make demo
 ```
 
-This runs a deterministic, scripted demo fleet of sessions in your
-browser (or the app, if installed) — no iTerm2, no permissions, no real
-data.
+From a source checkout, this opens the browser UI with nine scripted
+sessions. It uses a temporary data directory and leaves your installed
+Everwatch app and its working sessions running. Press Ctrl+C in the
+terminal to stop this demo. The installed `everwatch demo` command also
+opens the browser UI with sample sessions; it does not open the native app.
+For the exact reproducible screenshots in this README, run
+`make screenshots` from the checkout. See the
+[screenshot guide](docs/SCREENSHOTS.md) for details.
 
 ## First launch & permissions
 
@@ -169,11 +186,11 @@ anything.
 
 - **Split / List / Grid views** (`v`, or ⌘1/⌘2/⌘3): split shows a session
   list beside a live preview; list is a denser full-width table; grid is a
-  camera wall of every agent session (press `A` to include plain shells).
-- **AI sessions only**: the sparkle button in the toolbar (or `i`) hides
-  plain shells from every view — the list header then says "AI sessions"
-  with a "6 of 9" count, so a shorter list never looks like missing
-  sessions. Remembered across launches.
+  camera wall of AI sessions (press `A` to include plain shells).
+- **Session scope**: the toolbar switch (or `i`) chooses **AI sessions**
+  (Claude Code and Codex) or **All sessions** (including plain shells).
+  The list header shows the active scope and a visible/total count.
+  Remembered across launches.
 - **Selection**: ↑↓ or `j`/`k` move the selection; `⏎`/`g`/⌘⏎ or a
   double-click jumps to that session in iTerm2.
 - **Waiting sessions**: press `a` to jump to the longest-waiting session;
@@ -217,8 +234,9 @@ anything.
   (`EVERWATCH_LIVE_INTERVAL=<seconds>` changes that); other sessions keep
   the normal 2-second cadence. Not in compact mode. Full terminal
   emulation is a [future goal](docs/ROADMAP.md).
-- **Tokens Used**: the bottom bar always shows every Claude Code and Codex
-  quota (session, weekly, Sonnet, monthly/extra; Codex 5-hour and weekly):
+- **Tokens Used**: the bottom bar shows the available Claude Code and Codex
+  quotas (Claude five-hour and weekly, optional extra usage; Codex five-hour
+  and weekly):
   yellow from 50%, red from 80%. Every quota that's on pace to run out
   before it resets, or that's already hit, gets its own small chip — an
   hourglass with the projected run-out time, or a stop mark — side by
@@ -232,8 +250,9 @@ anything.
   name; ⌘⇧F searches the visible screen text of every session at once.
 - **Compact mode**: ⌘\\ opens a small floating panel that stays on top,
   useful if you don't want a second full-size window.
-- **Theme**: the sun/moon/auto button in the toolbar (or `t`) cycles Light
-  → Dark → Match System; the same choice as Settings → Appearance.
+- **Theme**: the toolbar button (or `t`) switches between light and dark;
+  its sun or moon icon shows the mode it will switch to. Settings →
+  Appearance also offers Match System, plus session font and size options.
 
 ## Keyboard shortcuts
 
@@ -312,7 +331,7 @@ everwatch [-h] [--version] {serve,open,demo,app,state,doctor,update,uninstall} .
 
 | Command | What it does |
 |---|---|
-| `everwatch` (no command) or `everwatch app` | Opens the installed `Everwatch.app` — the everyday way to start Everwatch. Falls back to `everwatch open`'s browser mode if there's no native app installed (`--browser-only`). |
+| `everwatch` (no command) or `everwatch app` | Opens the installed `Everwatch.app` — the everyday way to start Everwatch. Falls back to `everwatch open`'s browser mode if there's no native app installed (`--browser-only`). `everwatch app --demo` opens the scripted browser demo. |
 | `everwatch open` | Runs the backend and opens it in your default browser (no app installed, or `--browser-only`). No menu bar, native notifications, or global hotkeys in this mode. |
 | `everwatch serve` | Runs the backend only (used by `Everwatch.app` itself; `--port`, `--token`, `--parent-pipe`, etc.). |
 | `everwatch demo` | `serve --demo`, then opens a browser — a scripted, deterministic fleet of sessions, no permissions needed. |
@@ -418,6 +437,7 @@ you'll get a warning telling you to quit and relaunch it by hand.
 make test        # everything: py, py39, js, swift, shell-integration, e2e, e2e-real, install, lint
 make test-fast    # everything except the (slower) shell-integration/end-to-end suites
 make docs-keys    # regenerate this README's keyboard-shortcuts table
+make demo         # open the browser UI with isolated sample sessions
 make screenshots  # regenerate docs/screenshots/*.png headlessly
 ```
 
@@ -426,7 +446,7 @@ coverage), `make test-py39` (same suite under the exact Python 3.9.6
 shipped with the Command Line Tools), `make test-js` (`node:test` via
 `c8`, ≥90% lines / 85% branches), `make test-swift` (Swift Testing, built
 with `swiftc`, not SwiftPM), `make test-e2e` (headless Playwright/Chromium
-against a demo backend), `make test-e2e-real` (5 smoke tests,
+against a demo backend), `make test-e2e-real` (browser smoke tests,
 `tests/e2e/real/smoke.spec.mjs`, against the real
 `python3 -m everwatch serve --demo` backend instead of a JS fixture
 server), `make test-shell-integration` (a headless run of the built

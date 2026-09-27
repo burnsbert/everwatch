@@ -110,7 +110,7 @@ has no test tagged `P-xx`.
 |---|---|---|---|---|
 | P-19 | Header shows the brand, `N tabs · N agents`, and an amber `· N waiting` when any are waiting (`app.py:431-449`). | Toolbar: an amber "N waiting" pill that runs next-waiting when clicked. The window title and Dock badge show the waiting count. The logo and name show only in browser mode (in the app the native title bar already says "Everwatch"), and the `N tabs · N agents` counts moved to the status bar (VISUAL_SPEC D3). | ~ | e2e |
 | P-20 | Header status: **iTerm2 not running** (danger), **STALE** on a query error, **STALE {age}** when the snapshot is older than 4×interval (8 s) (`app.py:450-458`). | A status chip with the same three states, each with a tooltip explaining it and a "Diagnose" link. | ~ | e2e |
-| P-21 | Clicking the header opens the usage screen (`app.py:742-744`). | The token alert chip in the toolbar (the single worst quota state, e.g. "Claude Sonnet limit reached +3") opens the Usage view, as does clicking any quota in the status bar's Tokens Used strip. | ~ | e2e |
+| P-21 | Clicking the header opens the usage screen (`app.py:742-744`). | Clicking a quota or pace-warning chip in the status bar's Tokens Used strip opens the Usage view. | ~ | e2e |
 | P-22 | **Split view:** session list on the left and a live preview on the right. `split_ratio` defaults to 0.42, is clamped to 0.2–0.8, and moves in 0.05 steps with `<` `>` (also `,` `.`). The list is at least 26 columns and the preview at least 32. Toast: `list pane N% of width`. Persisted (`app.py:352-356`, `split_view.py:76-77`). | A draggable splitter plus the same keys and step, clamp, toast, and persisted ratio. Pixel minimums: list 280 px, preview 320 px. | ~ | e2e |
 | P-23 | Split view falls back to list view when the terminal is narrower than 100 columns (`config.py:23`, `app.py:407`). | Responsive breakpoint: below 900 px wide, split renders as list. | ~ | e2e |
 | P-24 | **List view:** full-width rows. "Window N" group headers appear only in natural sort with more than one window. A bottom strip shows the last 3 lines of the selected session (`❯ {path} ─ last 3 lines`) when the body has at least 10 rows (`list_view.py:125-180`). | Same grouping rule and a 3-line preview strip. | = | e2e |
@@ -158,7 +158,7 @@ has no test tagged `P-xx`.
 | P-51 | Claude usage: OAuth token read via `security find-generic-password -s 'Claude Code-credentials' -w` (`.claudeAiOauth.accessToken`), then `GET https://api.anthropic.com/api/oauth/usage` with the beta and User-Agent headers. 5-minute interval, 5 s timeout (`usage_claude.py:11-56`). | Ported verbatim. | = | py |
 | P-52 | Codex usage: token from `~/.codex/auth.json`, then `GET chatgpt.com/backend-api/wham/usage`. Missing 5h/7d windows are filled from the 10 newest `~/.codex/sessions/*/*/*/*.jsonl` files (under 24 h old, last 8 MB, `rate_limits`) (`usage_codex.py`). | Ported verbatim. | = | py |
 | P-53 | Usage pollers run only while a matching agent is running. When none is, the data clears and an `inactive` event is published once. Retry-After is honored as `max(base, retry)`, and the last good data is kept on failure (`pollers.py:241-304`). | Same. | = | py |
-| P-54 | Footer rows: CC Session (5h), Weekly (7d), Sonnet (7d); CC Monthly Limit, or `CC Extra Usage` when no limit is set; CX 5h and 7d. Each shows a percent, a bar, severity (≥80 red, ≥50 yellow, else green), and a reset countdown like `2h 15m (Today at 5:59pm)` (`usage_footer.py`, `projection.py:119-138`, `timefmt.py`). | A collapsible usage strip at the bottom: compact meters with the same labels, colors, and countdowns. | ~ | py, e2e |
+| P-54 | Footer rows: CC Session (5h), Weekly (7d), Sonnet (7d); CC Monthly Limit, or `CC Extra Usage` when no limit is set; CX 5h and 7d. Each shows a percent, a bar, severity (≥80 red, ≥50 yellow, else green), and a reset countdown like `2h 15m (Today at 5:59pm)` (`usage_footer.py`, `projection.py:119-138`, `timefmt.py`). | The bottom strip renders the quota buckets actually returned by each provider, with compact meters, severity, and reset countdowns. The demo shows current Claude five-hour and weekly limits plus optional monthly extra usage; it does not fabricate a Sonnet-only limit. | ~ | py, e2e |
 | P-55 | Pace projections: `on pace to hit {name} limit {when}` (warning) and `{name} limit hit` (danger). The monthly projection appears only if the hit would happen before next month starts. Codex has the same (`projection.py:24-116`). | Warning line under each meter, plus a dashed projection line on the burn-down chart (W-6). | = | py, e2e |
 | P-56 | Error rows: `usage API fetch failed` and `Codex usage fetch failed` when there's no data. The usage screen shows `fetch failing — showing data from X ago` when data is stale (`usage_footer.py:46-47,60-62`, `usage_view.py:80-84,109-113`). | Same text in the meter and the Usage view, with a retry button. | = | py, e2e |
 | P-57 | Usage screen (`u`): Claude Code and Codex sections, a `refreshed X ago` footer, and `no Claude Code or Codex sessions running` when empty. Keys: `$`, `r`, `u`/Esc (`usage_view.py`, `app.py:567-574`). | Usage view (`u` or toolbar) with the same sections and keys, plus charts (W-6). | ~ | e2e |
@@ -428,7 +428,7 @@ example, generated by `make golden` and consumed by the JS tests):
 
 ```json
 {
-  "rev": 412, "now": 1790000000.1, "started": 1789999000.0, "version": "0.2.4",
+  "rev": 412, "now": 1790000000.1, "started": 1789999000.0, "version": "0.2.5",
   "mode": "real|demo", "debug_state": false,
   "iterm": {"status": "ok|connecting|not_running|permission_denied|timeout|error",
             "error": "", "snapshot_at": 1790000000.0},
@@ -676,14 +676,13 @@ can explore before granting anything.
 
 ### 5.3 README screenshots, reproducibly
 
-`scripts/screenshots.mjs` starts the demo server with a fixed clock and seed,
-opens `/?frame=mac` (a CSS-drawn window frame, so no real window is
-involved), and uses viewport 1440×900 at `deviceScaleFactor: 2`. For each
-view × {dark, light} it waits for `document.body.dataset.ready === "1"` and
-disables animations (`reducedMotion: 'reduce'`). It writes PNGs to
-`docs/screenshots/`. Output is deterministic apart from font rasterization. A
-review diff in `make screenshots-check` uses Playwright's `toHaveScreenshot`
-with `maxDiffPixelRatio: 0.01`.
+`make screenshots` runs `scripts/screenshots.mjs`. It starts a fresh
+`serve --demo` backend with a disposable `EVERWATCH_HOME`, seed 1, and a
+fixed clock for each image, then captures the browser UI in headless
+Chromium. The script verifies demo mode and the sample session paths
+before writing PNGs to `docs/screenshots/`. It never launches or stops
+the installed app. See [SCREENSHOTS.md](SCREENSHOTS.md) for the current
+image list and reproduction steps.
 
 ### 5.4 Feasibility results (run here, 2026-09-25)
 

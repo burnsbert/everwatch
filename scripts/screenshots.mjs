@@ -26,8 +26,13 @@ const VIEWPORT = { width: 1280, height: 800 };
  * other shot wants it patched to `true` -- and matches how a user
  * actually encounters each screen. */
 async function shot(browser, name, { colorScheme = 'dark', onboardingDone = true, query = '', prefs = null, viewport = VIEWPORT, act } = {}) {
-  const server = await spawnBackend();
+  const server = await spawnBackend({ demoDiagnostics: 'all_ok' });
   try {
+    const { status, data } = await apiClient(server).getState();
+    if (status !== 200 || data?.mode !== 'demo' || data.sessions?.length !== 9
+        || !data.sessions.every((session) => session.path === '~' || session.path?.startsWith('~/src/'))) {
+      throw new Error('Screenshot backend did not return the expected sample sessions');
+    }
     if (onboardingDone || prefs) {
       await apiClient(server).patchPrefs({ ...(onboardingDone ? { onboarding_done: true } : {}), ...prefs });
     }
@@ -92,6 +97,10 @@ async function main() {
     written.push(await shot(browser, 'usage-light', {
       colorScheme: 'light',
       act: async (page) => { await page.keyboard.press('u'); await page.locator('.usage-section').first().waitFor(); },
+    }));
+    written.push(await shot(browser, 'settings-light', {
+      colorScheme: 'light',
+      act: async (page) => { await page.locator('#btn-settings').click(); await page.locator('.settings-page').waitFor(); },
     }));
     written.push(await shot(browser, 'palette-dark', {
       colorScheme: 'dark',

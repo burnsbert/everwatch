@@ -373,6 +373,25 @@ class TestBareAndAppCommand(unittest.TestCase):
         self.assertEqual(len(calls), 1)
         self.assertTrue(calls[0]['open_browser'])
 
+    def test_app_demo_opens_sample_browser_even_when_app_is_installed(self):
+        self._install_fake_app()
+        engines = []
+
+        def fake_run_server(engine, **kwargs):
+            engines.append((engine, kwargs))
+            return (0, 4242)
+
+        with mock.patch('everwatch.cli._launch_app') as mock_launch, \
+                mock.patch('everwatch.cli._run_server', side_effect=fake_run_server):
+            code = cli.main(['app', '--demo'], stdin=io.StringIO(),
+                            stdout=io.StringIO())
+        self.assertEqual(code, 0)
+        mock_launch.assert_not_called()
+        self.assertEqual(len(engines), 1)
+        self.assertEqual(engines[0][0].mode, 'demo')
+        self.assertIsInstance(engines[0][0].diag_probes, cli.diagnostics.FakeProbes)
+        self.assertTrue(engines[0][1]['open_browser'])
+
     def test_launch_app_runs_open_dash_a_against_the_app_dir(self):
         # `_launch_app` itself: the one real-I/O call site, never
         # exercised for real above -- `subprocess.run` is mocked here

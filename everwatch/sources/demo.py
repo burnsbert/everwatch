@@ -5,7 +5,7 @@ Reads demo_scenario.json: 9 sessions across 2 windows (4 Claude Code,
 question menu on a 90 s loop (so a transition to waiting — and its
 notification — keeps happening), spinners, a just-finished idle session,
 a Codex approval, `tail -f` output, tab colors, labels, project names,
-and usage data with a pace warning and a "limit hit" row.
+and usage data with a five-hour pace warning and current quota categories.
 
 Everything is a pure function of (scenario, seed, clock time):
 scenario time is `s = clock.now() - t0`, where t0 is the clock's time

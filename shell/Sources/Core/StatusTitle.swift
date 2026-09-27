@@ -62,7 +62,7 @@ enum StatusTitle {
 
 /// Version strings for the About panel (P-77).
 enum ShellInfo {
-    static let version = "0.2.4"
+    static let version = "0.2.5"
     static let bundleIdentifier = "io.github.burnsbert.everwatch"
     static let itermBundleIdentifier = "com.googlecode.iterm2"
 

@@ -94,16 +94,17 @@ class TestFleet(unittest.TestCase):
         self.assertTrue(all(len(x) == 12 for x in sparks))
         self.assertTrue(any('w' in x and 'b' in x for x in sparks))
 
-    def test_usage_has_a_warning_and_a_hit(self):  # parity: W-9, P-55
+    def test_usage_has_current_quota_categories(self):  # parity: W-9, P-55
         rows = (self.state['usage']['claude']['rows'] +
                 self.state['usage']['codex']['rows'])
         warnings = [r for r in rows if r['projection'] and
                     not r['projection']['hit']]
-        hits = [r for r in rows if r['projection'] and r['projection']['hit']]
         self.assertTrue(warnings)
-        self.assertTrue(hits)
+        self.assertEqual([r['id'] for r in self.state['usage']['claude']['rows']],
+                         ['cc.five_hour', 'cc.seven_day', 'cc.monthly'])
+        self.assertFalse(any(r['hit'] for r in rows))
         self.assertEqual({r['level'] for r in rows},
-                         {'green', 'yellow', 'red'})
+                         {'green', 'yellow'})
 
     def test_screens_include_prompts(self):  # parity: W-9
         screens = '\n'.join(self.state['screens'].values())
@@ -132,7 +133,7 @@ class TestFleet(unittest.TestCase):
             oldest_hours = (T0 - min(ats)) / 3600
             self.assertGreaterEqual(oldest_hours, 5, uid)
             self.assertGreaterEqual(len(ats), 20, uid)
-        for uid in ('cc.seven_day', 'cc.seven_day_sonnet', 'cx.seven_day'):
+        for uid in ('cc.seven_day', 'cx.seven_day'):
             ats = [at for at, _pct in by_id[uid]]
             oldest_days = (T0 - min(ats)) / 86400
             self.assertGreaterEqual(oldest_days, 3, uid)
