@@ -4,7 +4,7 @@
 // Side effects (API calls, timers) live in commands.mjs and main.mjs.
 
 import { DEFAULTS } from './lib/format.mjs';
-import { visibleRows, clampRatio, SORTS, VIEWS } from './lib/rows.mjs';
+import { visibleRows, clampRatio, SORTS, VIEWS, secondaryPaneNumber } from './lib/rows.mjs';
 
 export const DEFAULT_PREFS = Object.freeze({
   view: 'split', sort: 'attention', split_ratio: 0.42, show_dollars: false,
@@ -13,6 +13,7 @@ export const DEFAULT_PREFS = Object.freeze({
   hotkey_show: 'opt+cmd+e', hotkey_next: 'opt+cmd+j', show_hints: true,
   show_row_activity: false, // Settings "Show activity strip on sessions" — off by default (row/tile noise reduction)
   agents_only: false, // toolbar "AI sessions only" toggle: list only Claude Code / Codex sessions
+  show_secondary_panes: true, // show all iTerm2 split panes unless hidden from the Sessions header
 });
 
 // §4.13: "At most 3 are stacked; the oldest leaves first."
@@ -346,13 +347,14 @@ export function sessionsOf(state) {
   });
 }
 
-/** Sessions the main window lists: every session, or only agent
- * (Claude Code / Codex) sessions while the toolbar's "AI sessions only"
- * toggle is on. The compact panel ignores the toggle (its own list). */
+/** Visible sessions in every view. The AI-only switch does not apply to the
+ * compact panel, but the split-pane switch applies to every session list. */
 export function listedSessionsOf(state) {
-  const all = sessionsOf(state);
-  if (state.compact || !prefsOf(state).agents_only) return all;
-  return all.filter((s) => !!s.kind);
+  const prefs = prefsOf(state);
+  let list = sessionsOf(state);
+  if (!prefs.show_secondary_panes) list = list.filter((s) => !secondaryPaneNumber(s));
+  if (!state.compact && prefs.agents_only) list = list.filter((s) => !!s.kind);
+  return list;
 }
 
 export function rowsOf(state) {

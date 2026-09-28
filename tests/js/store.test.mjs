@@ -394,3 +394,17 @@ test('agents_only ("AI sessions only") lists only Claude Code / Codex sessions; 
   const compact = reduce(loaded({ compact: true }), { type: 'prefsPending', prefs: { agents_only: true }, localNow: NOW });
   assert.equal(rowsOf(compact).length, 9);
 });
+
+test('secondary panes are shown by default and can be hidden in every view', () => {
+  const primary = fixture.sessions[0];
+  const secondary = { ...primary, uid: 'second-pane', session_index: 2, name: 'split pane' };
+  const state = reduce(initialState(), {
+    type: 'state', state: { ...fixture, sessions: [...fixture.sessions, secondary] }, localNow: NOW,
+  });
+  assert.equal(DEFAULT_PREFS.show_secondary_panes, true);
+  assert.equal(rowsOf(state).length, 10);
+  const hidden = reduce(state, { type: 'prefsPending', prefs: { show_secondary_panes: false }, localNow: NOW });
+  assert.equal(rowsOf(hidden).length, 9);
+  assert.ok(!listedSessionsOf(hidden).some((s) => s.uid === secondary.uid));
+  assert.equal(rowsOf({ ...hidden, compact: true }).length, 9);
+});

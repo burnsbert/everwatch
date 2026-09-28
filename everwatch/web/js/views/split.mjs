@@ -4,6 +4,7 @@
 
 import { h, setText, attr } from './dom.mjs';
 import { createSessionList } from './sessions.mjs';
+import { createPaneToggle } from './pane_toggle.mjs';
 import { createPreview } from './preview.mjs';
 import { createReplyBar } from './reply.mjs';
 import { splitWidths, clampRatio } from '../lib/rows.mjs';
@@ -15,8 +16,9 @@ export function createSplitView({ run, store, api }) {
   const sessions = createSessionList({ run, mode: 'split' });
   const title = h('span', { class: 'pane-title', text: 'Sessions' });
   const count = h('span', { class: 'pane-count' });
+  const paneToggle = createPaneToggle({ run });
   const listPane = h('section', { class: 'list-pane', 'aria-label': 'Session list' },
-    h('header', { class: 'pane-head' }, title, count), sessions.el);
+    h('header', { class: 'pane-head' }, title, count, h('span', { class: 'toolbar-spacer' }), paneToggle.el), sessions.el);
   const splitter = h('div', {
     class: 'splitter', role: 'separator', tabindex: '0', 'aria-orientation': 'vertical',
     'aria-label': 'Resize list pane', 'aria-valuemin': '20', 'aria-valuemax': '80', 'data-tip': 'Drag to resize  < >',
@@ -81,7 +83,9 @@ export function createSplitView({ run, store, api }) {
     // a shortened list never looks like missing sessions.
     const agentsOnly = !!m.prefs.agents_only;
     setText(title, agentsOnly ? 'AI sessions' : 'Sessions');
-    setText(count, m.filter || agentsOnly ? `${m.rows.length} of ${m.total}` : String(m.total));
+    setText(count, m.filter || agentsOnly || m.rows.length !== m.total
+      ? `${m.rows.length} of ${m.total}` : String(m.total));
+    paneToggle.update(m.prefs.show_secondary_panes);
     sessions.update({ ...m, grouped: false });
     preview.update({
       session: m.selected, screen: m.screen, now: m.now, snapshotAt: m.snapshotAt, debugState: m.debugState,

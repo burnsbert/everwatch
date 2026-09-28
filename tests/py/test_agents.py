@@ -14,6 +14,18 @@ class TestDetectAgentsFromProcess(unittest.TestCase):
             agents.detect_agents_from_process('node', 'claude --resume'),
             {'claude'})
 
+    def test_versioned_claude_binary(self):
+        binary = '/Users/dev/.local/share/claude/versions/2.1.283'
+        self.assertEqual(
+            agents.detect_agents_from_process('/Users/dev',
+                                              binary + ' --agent-id worker@session --parent-session-id parent'),
+            {'claude'})
+        self.assertEqual(agents.detect_agents_from_process(binary, ''), {'claude'})
+        self.assertEqual(
+            agents.detect_agents_from_process('zsh', 'zsh -c "echo ' + binary + '"'), set())
+        self.assertEqual(
+            agents.detect_agents_from_process('/Users/dev/.local/share/other/versions/2.1.283', ''), set())
+
     def test_node_launcher_claude(self):  # parity: P-07
         self.assertEqual(
             agents.detect_agents_from_process(

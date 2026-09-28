@@ -620,3 +620,12 @@ test('agents.toggle PATCHes agents_only (AI sessions only ↔ all sessions); no 
   assert.equal(prefsOf(store.getState()).agents_only, false);
   assert.deepEqual(toasts(), []);
 });
+
+test('panes.toggle changes the persisted split-pane preference', () => {
+  const { cmds, store } = setup();
+  assert.equal(prefsOf(store.getState()).show_secondary_panes, true);
+  assert.equal(cmds.run('panes.toggle'), true);
+  assert.equal(prefsOf(store.getState()).show_secondary_panes, false);
+  cmds.run('panes.toggle');
+  assert.equal(prefsOf(store.getState()).show_secondary_panes, true);
+});

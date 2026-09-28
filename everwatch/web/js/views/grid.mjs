@@ -6,12 +6,13 @@
 // view via `columns()`).
 
 import { h, icon, reconcile, setText, attr, classes } from './dom.mjs';
-import { gridRows } from '../lib/rows.mjs';
+import { gridRows, secondaryPaneNumber } from '../lib/rows.mjs';
 import { tailLines, rowAge, ageSpoken, KIND_NAMES } from '../lib/format.mjs';
 import {
   badgeEl, updateBadge, badgeKind, tabColorTip, chipTip, chipText, tabTip, glyphTip,
 } from './row.mjs';
 import { spark, updateSpark } from './spark.mjs';
+import { createPaneToggle } from './pane_toggle.mjs';
 
 // Keep in sync with the `minmax(…)` floor in `.grid-tiles` (app.css): ~3
 // columns at 1440px, 2 at ~1000px, 1 below ~700px (W-8 polish).
@@ -28,6 +29,7 @@ function tile({ onEditCommit, onEditCancel } = {}) {
   const glyph = h('span', { class: 'glyph', 'aria-hidden': 'true' });
   const name = h('span', { class: 'tile-name' });
   const tab = h('span', { class: 'tile-tab' });
+  const pane = h('span', { class: 'pane-marker', hidden: true });
   const dot = h('span', { class: 'tab-dot', 'aria-hidden': 'true' });
   const projName = h('span', { class: 'row-project-name' });
   const projectChip = h('button', { type: 'button', class: 'row-project tile-project' }, dot, projName);
@@ -35,10 +37,10 @@ function tile({ onEditCommit, onEditCancel } = {}) {
   const age = h('span', { class: 'tile-age' });
   const tail = h('pre', { class: 'tile-tail' });
   const tileSpark = spark('tile-spark');
-  const head = h('div', { class: 'tile-head' }, glyph, projectChip, tab, name, h('span', { class: 'tile-spacer' }), badge, age);
+  const head = h('div', { class: 'tile-head' }, glyph, projectChip, tab, name, pane, h('span', { class: 'tile-spacer' }), badge, age);
   const el = h('div', { class: 'tile', role: 'option', 'aria-selected': 'false', tabindex: '-1' }, head, tileSpark, tail);
   el.__parts = {
-    glyph, name, tab, dot, projName, projectChip, badge, age, tail, tileSpark,
+    glyph, name, tab, pane, dot, projName, projectChip, badge, age, tail, tileSpark,
   };
   return el;
 }
@@ -58,6 +60,12 @@ function updateTile(el, m) {
   attr(p.glyph, 'data-tip', glyphTip(s, m.now));
   setText(p.tab, s.tab_label || '');
   attr(p.tab, 'data-tip', tabTip(s.tab_label));
+  const paneNumber = secondaryPaneNumber(s);
+  p.pane.hidden = !paneNumber;
+  if (paneNumber) {
+    setText(p.pane, `Pane ${paneNumber}`);
+    attr(p.pane, 'data-tip', `Secondary split pane ${paneNumber} in iTerm2 tab ${s.tab_label}`);
+  }
   setText(p.name, basename(s.path) || s.display_name || s.name);
   attr(p.name, 'title', s.display_name || s.name || '');
   updateBadge(p.badge, s);
@@ -80,7 +88,7 @@ function updateTile(el, m) {
     attr(p.tileSpark, 'data-tip', s.spark ? 'Activity over the last 60 minutes' : null);
   }
   setText(p.tail, tailLines(m.screen || '', TAIL_LINES, 160, true).join('\n') || '(no output yet)');
-  attr(el, 'aria-label', `${s.display_name || s.name}, ${KIND_NAMES[s.kind] || 'plain shell'}, ${s.state || 'idle'}${waiting && s.state_since ? `, waiting ${ageSpoken(m.now - s.state_since)}` : ''}`);
+  attr(el, 'aria-label', `${s.display_name || s.name}, ${KIND_NAMES[s.kind] || 'plain shell'}${paneNumber ? `, secondary split pane ${paneNumber}` : ''}, ${s.state || 'idle'}${waiting && s.state_since ? `, waiting ${ageSpoken(m.now - s.state_since)}` : ''}`);
 }
 
 export function createGridView({ run }) {
@@ -108,7 +116,8 @@ export function createGridView({ run }) {
   const seg = h('div', { class: 'segmented segmented--text grid-seg', role: 'radiogroup', 'aria-label': 'Grid sessions shown' }, agentsBtn, allBtn);
   const title = h('span', { class: 'pane-title', text: 'Sessions' });
   const count = h('span', { class: 'pane-count' });
-  const head = h('header', { class: 'pane-head grid-head' }, title, count, h('span', { class: 'toolbar-spacer' }), seg);
+  const paneToggle = createPaneToggle({ run });
+  const head = h('header', { class: 'pane-head grid-head' }, title, count, h('span', { class: 'toolbar-spacer' }), seg, paneToggle.el);
   const root = h('div', { class: 'gridview' }, head, list, empty);
 
   list.addEventListener('click', (e) => {
@@ -145,6 +154,7 @@ export function createGridView({ run }) {
     const onlyAgents = rows.length > 0 && rows.every((r) => r.s.kind);
     setText(title, agentsOnly || onlyAgents ? 'AI sessions' : 'All sessions');
     setText(count, m.filter || rows.length !== m.total ? `${rows.length} of ${m.total}` : String(rows.length));
+    paneToggle.update(m.prefs.show_secondary_panes);
     empty.hidden = rows.length > 0 || m.total === 0;
     list.hidden = !rows.length;
     reconcile(list, rows, (r) => r.s.uid, () => tile({ run }), (el, r) => {

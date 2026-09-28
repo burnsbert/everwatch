@@ -65,6 +65,16 @@ class TestSchemaV2(Base):
         self.assertEqual(rejected, ['agents_only'])
         self.assertTrue(st.get('agents_only'))
 
+    def test_secondary_panes_default_on_and_are_patchable(self):
+        st = self.store()
+        self.assertTrue(st.get('show_secondary_panes'))
+        clean, rejected = st.update_prefs({'show_secondary_panes': False}, now=NOW)
+        self.assertEqual(rejected, [])
+        self.assertFalse(clean['show_secondary_panes'])
+        _, rejected = st.update_prefs({'show_secondary_panes': 'no'}, now=NOW)
+        self.assertEqual(rejected, ['show_secondary_panes'])
+        self.assertFalse(st.get('show_secondary_panes'))
+
     def test_defaults_are_not_shared_between_stores(self):  # parity: P-70
         a = self.store()
         a.state['compact']['agents_only'] = False

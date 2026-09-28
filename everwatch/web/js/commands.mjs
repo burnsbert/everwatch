@@ -367,6 +367,7 @@ export function createCommands({
     },
     'dollars.toggle': () => togglePref('show_dollars'),
     'agents.toggle': () => togglePref('agents_only'),
+    'panes.toggle': () => togglePref('show_secondary_panes'),
     'sound.toggle': () => togglePref('sound_on_attention'),
     'notify.toggle': () => togglePref('notify_on_waiting'),
     'dockBadge.toggle': () => togglePref('show_dock_badge'),

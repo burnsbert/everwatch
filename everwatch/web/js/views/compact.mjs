@@ -6,6 +6,7 @@
 
 import { h, reconcile, setText, attr, classes } from './dom.mjs';
 import { rowAge } from '../lib/format.mjs';
+import { secondaryPaneNumber } from '../lib/rows.mjs';
 import {
   badgeEl, updateBadge, badgeKind, projectName, tabColorTip,
 } from './row.mjs';
@@ -13,15 +14,16 @@ import {
 function compactRow() {
   const glyph = h('span', { class: 'glyph', 'aria-hidden': 'true' });
   const name = h('span', { class: 'compact-name' });
+  const pane = h('span', { class: 'pane-marker pane-marker--compact', hidden: true });
   // Space is tight (320px floating panel): a dot only, no project-name
   // text — the color and its meaning are still in the tooltip. The agent
   // badge is glyph-only here (§4.17 compact form), but always present.
   const dot = h('span', { class: 'tab-dot compact-dot', 'aria-hidden': 'true' });
   const badge = badgeEl();
   const age = h('span', { class: 'compact-age' });
-  const el = h('div', { class: 'compact-row', role: 'option', 'aria-selected': 'false' }, glyph, dot, name, badge, age);
+  const el = h('div', { class: 'compact-row', role: 'option', 'aria-selected': 'false' }, glyph, dot, name, pane, badge, age);
   el.__parts = {
-    name, dot, badge, age, glyph,
+    name, pane, dot, badge, age, glyph,
   };
   return el;
 }
@@ -35,6 +37,13 @@ function updateRow(el, { s, now, projects }) {
   p.glyph.className = `glyph glyph--${s.state || 'none'}`;
   setText(p.name, s.display_name || s.name || s.uid.slice(0, 8));
   attr(p.name, 'title', s.display_name || s.name || '');
+  const paneNumber = secondaryPaneNumber(s);
+  p.pane.hidden = !paneNumber;
+  if (paneNumber) {
+    setText(p.pane, `P${paneNumber}`);
+    attr(p.pane, 'data-tip', `Secondary split pane ${paneNumber} in iTerm2 tab ${s.tab_label}`);
+  }
+  attr(el, 'aria-label', `${s.display_name || s.name}${paneNumber ? `, secondary split pane ${paneNumber}` : ''}`);
   const color = s.tab_color || 'none';
   const dc = `tab-dot compact-dot tab-dot--${color}`;
   if (p.dot.className !== dc) p.dot.className = dc;

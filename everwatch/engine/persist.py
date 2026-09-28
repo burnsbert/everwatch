@@ -8,7 +8,7 @@ disk, and best-effort (a failed save never crashes the engine).
 Schema v2 = the v1 keys (minus `bell`) plus theme, sound_on_attention,
 dock_bounce, notify_on_waiting, grid_all, usage_collapsed, hotkey_show,
 hotkey_next, show_hints, compact, onboarding_done, debug_state,
-show_row_activity, agents_only, and imported_from_ultrawatch. Unknown keys are
+show_row_activity, agents_only, show_secondary_panes, and imported_from_ultrawatch. Unknown keys are
 preserved; invalid values are normalized to their defaults.
 
 **Sound is never turned on by migration.** A v1 `bell` (Everwatch's own
@@ -60,6 +60,7 @@ DEFAULTS = {
     'debug_state': False,  # Settings "Show matched rule" (P-18)
     'show_row_activity': False,  # Settings "Show activity strip on sessions"
     'agents_only': False,  # toolbar "AI sessions only" (main window list)
+    'show_secondary_panes': True,  # show every iTerm2 split pane by default
     'imported_from_ultrawatch': None,  # {'at', 'path', 'bell_was_on'}
 }
 
@@ -69,13 +70,13 @@ PREF_KEYS = ('view', 'sort', 'split_ratio', 'show_dollars',
              'sound_on_attention', 'dock_bounce', 'show_dock_badge', 'notify_on_waiting',
              'theme', 'session_font', 'session_font_size', 'grid_all', 'usage_collapsed', 'hotkey_show',
              'hotkey_next', 'show_hints', 'compact', 'onboarding_done',
-             'debug_state', 'show_row_activity', 'agents_only',
+             'debug_state', 'show_row_activity', 'agents_only', 'show_secondary_panes',
              'projects_open')
 
 _BOOL_KEYS = ('show_dollars', 'projects_open', 'sound_on_attention',
               'dock_bounce', 'show_dock_badge', 'notify_on_waiting', 'grid_all',
               'usage_collapsed', 'show_hints', 'onboarding_done',
-              'debug_state', 'show_row_activity', 'agents_only')
+              'debug_state', 'show_row_activity', 'agents_only', 'show_secondary_panes')
 _ENUM_KEYS = {'view': VIEWS, 'sort': SORTS, 'theme': THEMES,
               'session_font': SESSION_FONTS, 'session_font_size': SESSION_FONT_SIZES}
 

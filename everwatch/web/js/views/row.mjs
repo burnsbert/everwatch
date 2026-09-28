@@ -10,6 +10,7 @@ import { h, setText, classes, attr, setRuns, icon } from './dom.mjs';
 import { rowAge, isFresh, ageSpoken, KIND_NAMES } from '../lib/format.mjs';
 import { fieldHighlights, highlightRuns } from '../lib/fuzzy.mjs';
 import { spark, updateSpark } from './spark.mjs';
+import { secondaryPaneNumber } from '../lib/rows.mjs';
 
 const STATE_WORDS = { waiting: 'waiting for input', busy: 'busy', idle: 'idle', active: 'producing output', quiet: 'quiet' };
 
@@ -119,6 +120,7 @@ export function tabTip(label) {
 export function createRow({ onEditCommit, onEditCancel } = {}) {
   const glyph = h('span', { class: 'glyph', 'aria-hidden': 'true' });
   const name = h('span', { class: 'row-name' });
+  const pane = h('span', { class: 'pane-marker', hidden: true });
   const editIcon = h('button', {
     type: 'button', class: 'row-edit-icon', 'data-tip': 'Rename  l', 'aria-label': 'Rename session',
   }, icon('edit', 'icon icon--tiny'));
@@ -136,10 +138,10 @@ export function createRow({ onEditCommit, onEditCancel } = {}) {
   const rowSpark = spark('row-spark');
   const el = h('div', { class: 'row', role: 'option', 'aria-selected': 'false', draggable: 'true' },
     glyph,
-    h('div', { class: 'row-main' }, h('div', { class: 'row-line1' }, name, editIcon), h('div', { class: 'row-line2' }, projectChip, path)),
+    h('div', { class: 'row-main' }, h('div', { class: 'row-line1' }, name, pane, editIcon), h('div', { class: 'row-line2' }, projectChip, path)),
     h('div', { class: 'row-meta' }, age, h('span', { class: 'row-tags' }, rowSpark, badge, tab)));
   el.__parts = {
-    glyph, name, editIcon, editor, path, age, dot, projName, projectChip, badge, tab, rowSpark,
+    glyph, name, pane, editIcon, editor, path, age, dot, projName, projectChip, badge, tab, rowSpark,
   };
   // Drag onto a projects-panel slot to color-assign (P-62 "if cheap").
   el.addEventListener('dragstart', (e) => {
@@ -207,6 +209,12 @@ export function updateRow(el, m) {
   const nameHits = s.label && nameText === s.label ? hl.label : nameText === s.name ? hl.name : [];
   setRuns(p.name, highlightRuns(nameText, nameHits), `${nameText}|${nameHits.join(',')}`);
   attr(p.name, 'title', s.label && s.name && s.name !== s.label ? `${s.label} — ${s.name}` : nameText);
+  const paneNumber = secondaryPaneNumber(s);
+  p.pane.hidden = !paneNumber;
+  if (paneNumber) {
+    setText(p.pane, `Pane ${paneNumber}`);
+    attr(p.pane, 'data-tip', `Secondary split pane ${paneNumber} in iTerm2 tab ${s.tab_label}`);
+  }
 
   // path, left-ellipsized via direction:rtl; LRM keeps `~` and `/` in place
   const pathText = s.path || '';
@@ -269,6 +277,7 @@ export function updateRow(el, m) {
 
   // screen-reader label
   const words = [nameText, KIND_NAMES[s.kind] || 'plain shell', STATE_WORDS[s.state] || ''];
+  if (paneNumber) words.push(`secondary split pane ${paneNumber}`);
   if (waiting && s.state_since) words.push(`for ${ageSpoken(m.now - s.state_since)}`);
   if (note) words.push(note);
   if (s.path) words.push(s.path);

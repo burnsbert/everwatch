@@ -35,6 +35,7 @@
   "show_dollars": false,
   "show_hints": true,
   "show_row_activity": false,
+  "show_secondary_panes": true,
   "sort": "attention",
   "sound_on_attention": false,
   "split_ratio": 0.42,
@@ -391,7 +392,7 @@
    "status": "ok"
   }
  },
- "version": "0.2.6",
+ "version": "0.2.7",
  "waiting_order": [
   "5E1C0A7B-1F2D-4E8A-9B3C-0D4E5F6A7B01",
   "5E1C0A7B-1F2D-4E8A-9B3C-0D4E5F6A7B03"

@@ -54,6 +54,14 @@ class TestFillMissingTtyCwds(unittest.TestCase):
 
 class TestGetAgentTtys(unittest.TestCase):
     @mock.patch('everwatch.engine.agents.subprocess.run')
+    def test_versioned_claude_in_secondary_pane(self, run):
+        binary = '/Users/dev/.local/share/claude/versions/2.1.283'
+        run.return_value = mock.Mock(stdout=(
+            'ttys010  /Users/dev  ' + binary + ' --agent-id worker@session\n'
+            'ttys011  zsh         -zsh\n'))
+        self.assertEqual(agents.get_agent_ttys(), {'/dev/ttys010': {'claude'}})
+
+    @mock.patch('everwatch.engine.agents.subprocess.run')
     def test_skips_question_mark_ttys(self, run):  # parity: P-07
         run.return_value = mock.Mock(
             stdout=' ??      launchd          /sbin/launchd\n'

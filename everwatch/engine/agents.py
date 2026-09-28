@@ -3,11 +3,15 @@
 Ported verbatim from ultrawatch_lib/agents.py (P-06, P-07).
 """
 import os
+import re
 import subprocess
 
 from everwatch.engine import config
 
 NODE_LAUNCHERS = {'node', 'bun'}
+CLAUDE_VERSIONED_BINARY = re.compile(
+    r'(?:^|/)\.local/share/claude/versions/\d+\.\d+\.\d+(?:[-+][\w.]+)?$'
+)
 
 
 def process_basename(value):
@@ -22,9 +26,13 @@ def detect_agents_from_process(comm, args):
     second_base = process_basename(second)
     comm_base = process_basename(comm)
     launch_prefix = ' '.join(tokens[:3]).lower()
+    # Claude's native installer runs a version-numbered binary directly.
+    # On macOS `ps` can truncate `comm`, so check argv[0] as well.
+    versioned_claude = any(CLAUDE_VERSIONED_BINARY.search(path.strip('"'))
+                           for path in (comm, tokens[0] if tokens else ''))
 
     agents = set()
-    if (comm_base == 'claude' or first == 'claude' or
+    if (comm_base == 'claude' or first == 'claude' or versioned_claude or
             (first in NODE_LAUNCHERS and second_base == 'claude') or
             '@anthropic-ai/claude-code' in launch_prefix):
         agents.add('claude')

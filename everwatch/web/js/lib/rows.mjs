@@ -10,6 +10,11 @@ export const SORT_LABELS = Object.freeze({
 });
 export const VIEWS = Object.freeze(['split', 'list', 'grid']);
 
+/** iTerm2 numbers sessions within each tab starting at 1. */
+export function secondaryPaneNumber(s) {
+  return Number.isInteger(s?.session_index) && s.session_index > 1 ? s.session_index : null;
+}
+
 const STATE_RANK = { waiting: 0, busy: 1, active: 2, idle: 3, quiet: 4 };
 
 function cmp(a, b) {

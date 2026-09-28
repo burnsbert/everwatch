@@ -56,6 +56,7 @@ export const BINDINGS = Object.freeze([
   { id: 'split.grow', keys: ['>', '.'], contexts: ['main'], group: 'View', label: 'Widen list pane' },
   { id: 'split.shrink', keys: ['<', ','], contexts: ['main'], group: 'View', label: 'Narrow list pane' },
   { id: 'agents.toggle', keys: ['i', 'I'], contexts: MAIN, group: 'View', label: 'AI sessions only / all sessions' },
+  { id: 'panes.toggle', keys: ['h', 'H'], contexts: MAIN, group: 'View', label: 'Show/hide secondary split panes' },
   { id: 'grid.toggleAll', keys: ['A'], contexts: ['grid'], group: 'View', label: 'Grid: AI sessions / all sessions', hint: 'all' },
   { id: 'usage.open', keys: ['u', 'U'], contexts: MAIN, group: 'View', label: 'Usage limits', hint: 'usage' },
   { id: 'theme.cycle', keys: ['t', 'T'], contexts: MAIN, group: 'View', label: 'Theme: switch light / dark mode' },

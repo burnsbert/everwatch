@@ -204,6 +204,10 @@ anything.
   (Claude Code and Codex) or **All sessions** (including plain shells).
   The list header shows the active scope and a visible/total count.
   Remembered across launches.
+- **Split panes**: secondary panes in an iTerm2 tab have a **Pane 2**, **Pane 3**,
+  etc. marker. The **Panes** button at the right of the Sessions header (or
+  `h`) hides or shows them in every view. All panes are shown by default;
+  the choice is remembered.
 - **Selection**: ↑↓ or `j`/`k` move the selection; `⏎`/`g`/⌘⏎ or a
   double-click jumps to that session in iTerm2.
 - **Waiting sessions**: press `a` to jump to the longest-waiting session;
@@ -314,6 +318,7 @@ file.
 | `>` / `.` | Widen list pane |
 | `<` / `,` | Narrow list pane |
 | `i` | AI sessions only / all sessions |
+| `h` | Show/hide secondary split panes |
 | `A` | Grid: AI sessions / all sessions |
 | `u` | Usage limits |
 | `t` | Theme: switch light / dark mode |

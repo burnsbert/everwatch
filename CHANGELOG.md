@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.7] — 2026-09-28
+
+### Added
+
+- Secondary iTerm2 split panes are marked in session lists and grid tiles.
+  The **Panes** button in the Sessions header, or `h`, shows and hides them
+  across views. All panes are shown by default, and the choice is saved.
+
+### Fixed
+
+- Claude sessions launched from the native installer's versioned executable,
+  including agent panes, are identified as Claude instead of Shell.
+
 ## [0.2.6] — 2026-09-27
 
 ### Fixed

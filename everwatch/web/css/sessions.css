@@ -38,6 +38,16 @@
 }
 .pane-title { font: var(--weight-semibold) var(--text-small); color: var(--fg-dim); }
 .pane-count { font: var(--weight-regular) var(--text-small); color: var(--idle); font-variant-numeric: tabular-nums; }
+.pane-toggle {
+  display: inline-flex; align-items: center; gap: var(--sp-1);
+  flex: none; height: 24px; padding: 0 var(--sp-2);
+  border: 1px solid var(--border-strong); border-radius: var(--radius-s);
+  background: var(--bg-pane); color: var(--fg-dim);
+  font: var(--weight-medium) var(--text-small);
+}
+.pane-toggle:hover { background: var(--bg-hover); color: var(--fg); }
+.pane-toggle[aria-pressed="true"] { color: var(--fg); border-color: var(--fg-dim); }
+.pane-toggle .icon { width: 13px; height: 13px; }
 
 /* §4.6: the splitter always shows a 1px hairline; hover/drag turn it blue. */
 .splitter {
@@ -100,6 +110,16 @@
   font-family: var(--font-session);
   font-size: var(--session-name-size);
 }
+.pane-marker {
+  flex: none;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xs);
+  padding: 1px 4px;
+  color: var(--fg-dim);
+  font: var(--weight-medium) var(--text-small);
+  white-space: nowrap;
+}
+.pane-marker[hidden] { display: none; }
 /* Plain shells: one step quieter than AI sessions (with the "Shell" badge). */
 .row.is-shell .row-name { font-weight: var(--weight-regular); }
 /* Rename affordance (P-48): a pencil next to the name, in addition to the
@@ -691,6 +711,7 @@ html[data-mode="compact"] .app { grid-template-rows: minmax(0, 1fr); }
 .compact-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: var(--weight-medium) var(--text-control); font-family: var(--font-session); font-size: var(--session-tile-size); }
 .compact-row.is-shell .compact-name { font-weight: var(--weight-regular); }
 .compact-age { flex: none; font: var(--weight-regular) var(--text-small); color: var(--idle); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.pane-marker--compact { padding: 0 3px; }
 /* Dot only (no project-name text) — the 320px floating panel has no room
    for a full chip; the color and its meaning are still in the tooltip. */
 .compact-dot { width: 8px; height: 8px; }
