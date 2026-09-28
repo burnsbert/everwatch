@@ -7,4 +7,4 @@ DataSource and serves a localhost HTTP/SSE API to a vanilla-JS web UI
 inside a small Swift shell. See docs/DESIGN.md for the full design.
 """
 
-__version__ = '0.2.5'
+__version__ = '0.2.6'

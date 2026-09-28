@@ -532,6 +532,7 @@ USAGE_BACKFILL_HOURS = {
     'cc.five_hour': 5.5, 'cc.seven_day': 4 * 24, 'cc.seven_day_sonnet': 4 * 24,
     'cx.five_hour': 5.5, 'cx.seven_day': 4 * 24,
 }
+CODEX_WINDOW_IDS = {18000: 'cx.five_hour', 604800: 'cx.seven_day'}
 USAGE_BACKFILL_INTERVAL = 900  # seconds (15 min): enough shape, not too many points
 
 
@@ -548,12 +549,13 @@ def _usage_growth_specs(scenario):
         if bucket:
             specs[f'cc.{key}'] = (bucket.get('utilization', 0),
                                   bucket.get('rate_per_hour', 0))
-    for key, uid in (('primary_window', 'cx.five_hour'),
-                     ('secondary_window', 'cx.seven_day')):
+    for key in ('primary_window', 'secondary_window'):
         window = codex.get(key)
         if window:
-            specs[uid] = (window.get('used_percent', 0),
-                          window.get('rate_per_hour', 0))
+            uid = CODEX_WINDOW_IDS.get(window.get('limit_window_seconds'))
+            if uid:
+                specs[uid] = (window.get('used_percent', 0),
+                              window.get('rate_per_hour', 0))
     return specs
 
 

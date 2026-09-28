@@ -326,8 +326,8 @@ test('real browser timers (no fake clock): SSE watchdog, debounced prefs, and to
   await app.press('r');
   await expect(app.toasts().last()).toHaveText('refreshing…');
   const splitter = page.locator('.splitter');
+  await splitter.hover({ position: { x: 4, y: 100 } });
   const box = await splitter.boundingBox();
-  await page.mouse.move(box.x + 4, box.y + 100);
   await page.mouse.down();
   await page.mouse.move(box.x + 60, box.y + 100, { steps: 3 });
   await page.mouse.up();

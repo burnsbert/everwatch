@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.6] — 2026-09-27
+
+### Fixed
+
+- Demo quotas and README screenshots now match the real display's visible
+  categories and order: Claude Code Session, Claude Code Weekly, then Codex
+  Weekly. Monthly extra usage and Codex five-hour limits are no longer
+  shown in the sample fleet.
+- The Tokens Used alert chip no longer repeats its run-out time when the
+  footer has enough room for the full label.
+
 ## [0.2.5] — 2026-09-27
 
 ### Added

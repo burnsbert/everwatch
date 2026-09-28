@@ -39,8 +39,12 @@ test('P-22 split: the splitter drags, respects the preview minimum, and persists
   const splitter = page.locator('.splitter');
   await expect(splitter).toHaveAttribute('role', 'separator');
   await expect(splitter).toHaveAttribute('aria-valuenow', '42');
+  // The projects rail animates on load; dragging against its moving edge can
+  // miss the narrow splitter even when the initial bounding box was correct.
+  const rail = await railW(page);
+  await expect.poll(async () => Math.abs((await listWidth(page)) - 0.42 * (1280 - rail - 9))).toBeLessThan(2);
+  await splitter.hover({ position: { x: 4, y: 200 } });
   const box = await splitter.boundingBox();
-  await page.mouse.move(box.x + 4, box.y + 200);
   await page.mouse.down();
   await page.mouse.move(box.x + 150, box.y + 200, { steps: 4 });
   await page.mouse.up();
@@ -48,14 +52,13 @@ test('P-22 split: the splitter drags, respects the preview minimum, and persists
   const r = app.backend.state.prefs.split_ratio;
   await expect(splitter).toHaveAttribute('aria-valuenow', String(Math.round(r * 100)));
   // drag far right: ratio clamps at 0.8 and the preview keeps ≥ 320 px
+  await splitter.hover({ position: { x: 4, y: 200 } });
   const b2 = await splitter.boundingBox();
-  await page.mouse.move(b2.x + 4, b2.y + 200);
   await page.mouse.down();
   await page.mouse.move(1275, b2.y + 200, { steps: 4 });
   await page.mouse.up();
   await expect.poll(() => app.backend.state.prefs.split_ratio).toBe(0.8);
   const listW = await listWidth(page);
-  const rail = await railW(page);
   expect(1280 - rail - 9 - listW).toBeGreaterThanOrEqual(320 - 1);
   // keyboard on the focused splitter
   await splitter.focus();

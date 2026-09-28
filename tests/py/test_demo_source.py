@@ -101,7 +101,9 @@ class TestFleet(unittest.TestCase):
                     not r['projection']['hit']]
         self.assertTrue(warnings)
         self.assertEqual([r['id'] for r in self.state['usage']['claude']['rows']],
-                         ['cc.five_hour', 'cc.seven_day', 'cc.monthly'])
+                         ['cc.five_hour', 'cc.seven_day'])
+        self.assertEqual([r['id'] for r in self.state['usage']['codex']['rows']],
+                         ['cx.seven_day'])
         self.assertFalse(any(r['hit'] for r in rows))
         self.assertEqual({r['level'] for r in rows},
                          {'green', 'yellow'})
@@ -128,7 +130,7 @@ class TestFleet(unittest.TestCase):
         by_id = {}
         for s in samples:
             by_id.setdefault(s['id'], []).append((s['at'], s['pct']))
-        for uid in ('cc.five_hour', 'cx.five_hour'):
+        for uid in ('cc.five_hour',):
             ats = [at for at, _pct in by_id[uid]]
             oldest_hours = (T0 - min(ats)) / 3600
             self.assertGreaterEqual(oldest_hours, 5, uid)
@@ -277,7 +279,10 @@ class TestLiveBehavior(unittest.TestCase):
             src.fetch_paths()
 
     def test_quota_demo_prompt_and_draft(self):  # parity: W-9, P-69
-        engine, src, clock = self.live(quota=True)
+        scenario = json.loads(json.dumps(SCENARIO))
+        scenario['usage']['claude']['extra_usage'] = {
+            'is_enabled': True, 'monthly_limit': 20000, 'used_credits': 12340}
+        engine, src, clock = self.live(quota=True, scenario=scenario)
         prompt = engine.published.state['quota_prompt']
         self.assertEqual(prompt['to'], 'eng-manager@example.com')
         engine.call('quota_draft')

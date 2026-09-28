@@ -256,6 +256,7 @@ html[data-shell="1"] .brand { display: none; }
 .tok-alert .tok-icon.is-shown { display: block; }
 .tok-alert .tok-icon--pace { color: var(--warn-fill); }
 .tok-alert .tok-icon--hit { color: var(--danger); }
+.tok-alert-short { display: none; }
 .tok-alert-short[hidden] { display: none; }
 
 /* §4.18.4 / §4.10 step-down: views/tokens.mjs raises data-fit one level at

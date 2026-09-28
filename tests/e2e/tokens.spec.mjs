@@ -187,11 +187,13 @@ test('T040/T046 narrow widths step the strip down (§4.18.4) instead of hiding i
   await expect(bar).toHaveAttribute('data-fit', '0');
   await expect(page.locator('#hints')).toBeVisible();
   await expect(alertChip(page, 'cc.seven_day_sonnet').locator('.tok-alert-full')).toBeVisible();
+  await expect(alertChip(page, 'cc.five_hour').locator('.tok-alert-short')).toBeHidden();
   await page.setViewportSize({ width: 900, height: 800 });
   await expect.poll(async () => Number(await bar.getAttribute('data-fit'))).toBeGreaterThanOrEqual(2);
   expect(await noOverflow()).toBe(true);
   // alert chips drop to icon + time (or icon-only for a hit) at fit ≥ 2
   await expect(alertChip(page, 'cc.seven_day_sonnet').locator('.tok-alert-full')).toBeHidden();
+  await expect(alertChip(page, 'cc.five_hour').locator('.tok-alert-short')).toHaveCSS('display', 'inline');
   await expect(alertChip(page, 'cc.five_hour').locator('.tok-alert-short')).toHaveText(new RegExp(`\\d{1,2}:\\d{2} [AP]M`));
   await page.setViewportSize({ width: 800, height: 800 });
   await expect.poll(async () => Number(await bar.getAttribute('data-fit'))).toBeGreaterThanOrEqual(4);

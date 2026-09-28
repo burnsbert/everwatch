@@ -492,19 +492,11 @@
     "resets_in": 273600
    },
    "extra_usage": {
-    "is_enabled": true,
-    "monthly_limit": 20000,
-    "used_credits": 12340
+    "is_enabled": false
    }
   },
   "codex": {
    "primary_window": {
-    "used_percent": 18,
-    "rate_per_hour": 5,
-    "resets_in": 13200,
-    "limit_window_seconds": 18000
-   },
-   "secondary_window": {
     "used_percent": 58,
     "rate_per_hour": 0.5,
     "resets_in": 172800,

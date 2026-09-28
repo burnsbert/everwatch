@@ -70,7 +70,8 @@ include plain shells; **AI sessions** shows only Claude Code and Codex.
 
 **Usage limits** — Claude Code and Codex windows, with burn-down charts and
 an on-pace-to-hit warning. Click any quota in the Tokens Used bar to jump
-here.
+here. The sample shows Claude Code Session and Weekly on the left, and
+Codex Weekly on the right.
 
 ![Usage view](docs/screenshots/usage-light.png)
 

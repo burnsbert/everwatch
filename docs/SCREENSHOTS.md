@@ -2,8 +2,8 @@
 
 The images in [the README](../README.md#feature-tour) show Everwatch's
 scripted demo fleet. They contain sample project names, paths under
-`/Users/sam/src/`, terminal output, and usage figures based on the
-current five-hour and weekly quota categories. No live iTerm2
+`/Users/sam/src/`, terminal output, and usage figures for Claude Code
+Session and Weekly and Codex Weekly. No live iTerm2
 session or local account data is needed to reproduce them.
 
 ## Explore the demo

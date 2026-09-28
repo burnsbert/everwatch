@@ -367,17 +367,6 @@
      "projection": null,
      "reset_at": "2026-09-28T23:00:00+00:00",
      "reset_text": "3d 4h (Monday at 7:00pm)"
-    },
-    {
-     "dollars": null,
-     "hit": false,
-     "id": "cc.monthly",
-     "label": "CC Monthly Limit",
-     "level": "yellow",
-     "pct": 61.7,
-     "projection": null,
-     "reset_at": "2026-10-01T00:00:00-04:00",
-     "reset_text": "5d 9h (Thursday at 12:00am)"
     }
    ],
    "status": "ok"
@@ -387,17 +376,6 @@
    "checked_at": 1790362800.0,
    "error": "",
    "rows": [
-    {
-     "dollars": null,
-     "hit": false,
-     "id": "cx.five_hour",
-     "label": "CX 5h Limit",
-     "level": "green",
-     "pct": 18.0,
-     "projection": null,
-     "reset_at": "2026-09-25T22:40:00+00:00",
-     "reset_text": "3h 40m (Today at 6:40pm)"
-    },
     {
      "dollars": null,
      "hit": false,
@@ -413,7 +391,7 @@
    "status": "ok"
   }
  },
- "version": "0.2.5",
+ "version": "0.2.6",
  "waiting_order": [
   "5E1C0A7B-1F2D-4E8A-9B3C-0D4E5F6A7B01",
   "5E1C0A7B-1F2D-4E8A-9B3C-0D4E5F6A7B03"
