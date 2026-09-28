@@ -14,6 +14,18 @@ keeps ultrawatch's engine and behavior, and puts it in its own window, menu
 bar item, and floating panel — so you don't need a dedicated terminal tab
 to see who's stuck waiting for you.
 
+## Install
+
+On a Mac with iTerm2, paste this one line into Terminal:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/burnsbert/everwatch/main/install.sh | bash
+```
+
+Ultrawatch is not required. The installer checks for Python 3.9+, downloads
+and verifies the latest Everwatch release, and offers to open the app. See
+[installation details](#60-second-install) if a prerequisite is missing.
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/hero-dark.png">
   <source media="(prefers-color-scheme: light)" srcset="docs/screenshots/hero-light.png">
